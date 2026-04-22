@@ -10,6 +10,7 @@ load_dotenv()
 from .data import parse_mode_dashboard
 from .decision import recommend_lever, calculate_gap, calculate_q2_gap
 from .playbook import render_playbook
+from .databricks import fetch_touchpoints
 
 
 def build_summary(row, recommendation):
@@ -76,7 +77,25 @@ def _parse_y2_deferred(y2_table_text: str) -> list:
 def generate_web_data(row, recommendation, y2_table_text: str, docs_dir: Path) -> Path:
     """Write docs/data.json for the GitHub Pages interactive playbook."""
     q2_gap = calculate_q2_gap(row)
-    email_defer = int(row.email_touchpoints * 0.70)
+
+    # Pull live touchpoints from Databricks; fall back to CSV row values
+    try:
+        _touchpoints = fetch_touchpoints()
+        print("Touchpoints sourced from Databricks.")
+    except Exception as e:
+        print(f"Databricks unavailable ({e}); using CSV touchpoint values.")
+        _touchpoints = {
+            "email": {
+                "touchpoints": row.email_touchpoints,
+                "shifted": int(row.email_touchpoints * 0.70),
+            },
+            "dm": {
+                "touchpoints": row.direct_mail_touchpoints,
+                "shifted": int(row.direct_mail_touchpoints * 0.60),
+            },
+        }
+
+    email_defer = int(_touchpoints["email"]["touchpoints"] * 0.70)
 
     levers = [
         {
@@ -178,16 +197,7 @@ def generate_web_data(row, recommendation, y2_table_text: str, docs_dir: Path) -
             "remaining_weeks": row.remaining_weeks,
             "forecast_rate": row.forecast_enrollments,
         },
-        "touchpoints": {
-            "email": {
-                "touchpoints": row.email_touchpoints,
-                "shifted": int(row.email_touchpoints * 0.70),
-            },
-            "dm": {
-                "touchpoints": row.direct_mail_touchpoints,
-                "shifted": int(row.direct_mail_touchpoints * 0.60),
-            },
-        },
+        "touchpoints": _touchpoints,
         "y2_deferred": _parse_y2_deferred(y2_table_text),
         "recommended_lever_id": _lever_id(recommendation),
         "levers": levers,
