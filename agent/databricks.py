@@ -7,6 +7,7 @@ Required env vars:
   DATABRICKS_WAREHOUSE_ID  SQL warehouse ID (HTTP path segment)
 """
 
+import json
 import os
 import time
 from pathlib import Path
@@ -16,6 +17,7 @@ import requests
 
 _SQL_PATH = Path(__file__).resolve().parent.parent / "queries" / "channel_touchpoints.sql"
 _Y2_SQL_PATH = Path(__file__).resolve().parent.parent / "queries" / "y2_renewals.sql"
+_FORECAST_SQL_PATH = Path(__file__).resolve().parent.parent / "queries" / "working_forecast.sql"
 
 # Columns from the query used to populate data.json touchpoints
 _EMAIL_TOUCHPOINTS_COL = "email_qualified_volume"
@@ -60,7 +62,7 @@ def fetch_touchpoints(host: str = None, token: str = None, warehouse_id: str = N
         )
 
     sql = _SQL_PATH.read_text(encoding="utf-8")
-    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    headers = {"Authorization": f"Bearer {_extract_token(token)}", "Content-Type": "application/json"}
     base = f"{host}/api/2.0/sql/statements"
 
     # Submit statement
@@ -123,9 +125,20 @@ def fetch_touchpoints(host: str = None, token: str = None, warehouse_id: str = N
     }
 
 
+def _extract_token(token: str) -> str:
+    """Handle both raw tokens and JSON output from `databricks auth token`."""
+    token = token.strip()
+    if token.startswith("{"):
+        try:
+            return json.loads(token)["access_token"]
+        except (json.JSONDecodeError, KeyError):
+            pass
+    return token
+
+
 def _run_sql(sql: str, host: str, token: str, warehouse_id: str) -> list[dict]:
     """Execute a SQL statement on Databricks and return rows as list of dicts."""
-    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    headers = {"Authorization": f"Bearer {_extract_token(token)}", "Content-Type": "application/json"}
     base = f"{host}/api/2.0/sql/statements"
 
     resp = requests.post(
@@ -161,6 +174,73 @@ def _run_sql(sql: str, host: str, token: str, warehouse_id: str) -> list[dict]:
     columns = [c["name"] for c in manifest.get("schema", {}).get("columns", [])]
     data_array = result.get("result", {}).get("data_array", [])
     return [dict(zip(columns, row)) for row in data_array]
+
+
+def fetch_q2_metrics(host: str = None, token: str = None, warehouse_id: str = None) -> dict:
+    """
+    Run working_forecast.sql against Databricks and return aggregated Q2 metrics:
+      {
+        "q2_okr":      int,   # sum of okr_goal for current quarter
+        "q2_outlook":  int,   # sum of outlook for current quarter
+        "cumulative":  int,   # sum of actuals_till_date for current quarter
+        "gap":         int,   # q2_outlook - q2_okr
+        "gap_pct":     float, # gap as % of q2_okr
+      }
+    Raises RuntimeError if credentials are missing or the query fails.
+    """
+    from datetime import date
+
+    host = host or os.environ.get("DATABRICKS_HOST", "").rstrip("/")
+    token = token or os.environ.get("DATABRICKS_TOKEN", "")
+    warehouse_id = warehouse_id or os.environ.get("DATABRICKS_WAREHOUSE_ID", "")
+
+    if not all([host, token, warehouse_id]):
+        raise RuntimeError(
+            "Missing Databricks credentials. Set DATABRICKS_HOST, DATABRICKS_TOKEN, "
+            "and DATABRICKS_WAREHOUSE_ID in your .env file."
+        )
+
+    sql = _FORECAST_SQL_PATH.read_text(encoding="utf-8")
+    rows = _run_sql(sql, host, token, warehouse_id)
+
+    if not rows:
+        raise RuntimeError("Working forecast query returned no rows.")
+
+    # Current quarter start (first day of current quarter)
+    today = date.today()
+    q_month = ((today.month - 1) // 3) * 3 + 1
+    q_start = date(today.year, q_month, 1).isoformat()
+
+    def _float(val):
+        try:
+            return float(val or 0)
+        except (TypeError, ValueError):
+            return 0.0
+
+    q2_okr = 0.0
+    q2_outlook = 0.0
+    q2_cumulative = 0.0
+
+    for row in rows:
+        qs = str(row.get("quarter_start", ""))[:10]
+        if qs != q_start:
+            continue
+        q2_okr += _float(row.get("okr_goal"))
+        q2_outlook += _float(row.get("outlook"))
+        q2_cumulative += _float(row.get("actuals_till_date"))
+
+    q2_okr_int = round(q2_okr)
+    q2_outlook_int = round(q2_outlook)
+    gap = q2_outlook_int - q2_okr_int
+    gap_pct = round((gap / q2_okr_int * 100), 1) if q2_okr_int else 0.0
+
+    return {
+        "q2_okr": q2_okr_int,
+        "q2_outlook": q2_outlook_int,
+        "cumulative": round(q2_cumulative),
+        "gap": gap,
+        "gap_pct": gap_pct,
+    }
 
 
 def fetch_y2_renewals(host: str = None, token: str = None, warehouse_id: str = None) -> list[dict]:

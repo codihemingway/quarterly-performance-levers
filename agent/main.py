@@ -10,7 +10,7 @@ load_dotenv()
 from .data import parse_mode_dashboard
 from .decision import recommend_lever, calculate_gap, calculate_q2_gap
 from .playbook import render_playbook
-from .databricks import fetch_touchpoints, fetch_y2_renewals
+from .databricks import fetch_touchpoints, fetch_y2_renewals, fetch_q2_metrics
 
 
 def build_summary(row, recommendation):
@@ -76,7 +76,21 @@ def _parse_y2_deferred(y2_table_text: str) -> list:
 
 def generate_web_data(row, recommendation, y2_table_text: str, docs_dir: Path) -> Path:
     """Write docs/data.json for the GitHub Pages interactive playbook."""
-    q2_gap = calculate_q2_gap(row)
+
+    # Pull live Q2 OKR + Outlook from Databricks working_forecast.sql; fall back to CSV row
+    try:
+        _metrics = fetch_q2_metrics()
+        q2_okr = _metrics["q2_okr"]
+        q2_outlook = _metrics["q2_outlook"]
+        q2_cumulative = _metrics["cumulative"]
+        q2_gap = _metrics["gap_pct"]
+        print(f"Q2 metrics sourced from Databricks: OKR={q2_okr:,} Outlook={q2_outlook:,}")
+    except Exception as e:
+        print(f"Databricks unavailable for Q2 metrics ({e}); using CSV values.")
+        q2_okr = row.q2_okr
+        q2_outlook = row.q2_outlook
+        q2_cumulative = row.cumulative_enrollments
+        q2_gap = calculate_q2_gap(row)
 
     # Pull live touchpoints from Databricks; fall back to CSV row values
     try:
@@ -113,12 +127,12 @@ def generate_web_data(row, recommendation, y2_table_text: str, docs_dir: Path) -
             "workback_days": 0,
             "urgency_label": "No action needed",
             "rationale": (
-                f"Q2 outlook ({row.q2_outlook:,}) is {'above' if row.q2_outlook >= row.q2_okr else 'below'} the Q2 OKR ({row.q2_okr:,}). "
+                f"Q2 outlook ({q2_outlook:,}) is {'above' if q2_outlook >= q2_okr else 'below'} the Q2 OKR ({q2_okr:,}). "
                 "Prior direct mail campaigns are driving enrollment pipeline into Q2. "
                 "Email reactivation would defer Q2 enrollments to Q3 — the wrong direction."
             ),
             "estimated_impact": (
-                f"Q2 outlook is tracking {row.q2_outlook - row.q2_okr:+,} vs OKR. "
+                f"Q2 outlook is tracking {q2_outlook - q2_okr:+,} vs OKR. "
                 "No lever action needed; monitor quarterly pacing."
             ),
             "action": "Hold all channel volumes as planned. Reassess if Q2 outlook drops below OKR.",
@@ -136,7 +150,7 @@ def generate_web_data(row, recommendation, y2_table_text: str, docs_dir: Path) -
             "workback_days": 7,
             "urgency_label": "Decision needed within 7 days",
             "rationale": (
-                f"Q2 outlook ({row.q2_outlook:,}) is below OKR ({row.q2_okr:,}) "
+                f"Q2 outlook ({q2_outlook:,}) is below OKR ({q2_okr:,}) "
                 f"with {row.remaining_weeks} weeks remaining. "
                 "Email reactivation is eligible under marketing/reactivation criteria."
             ),
@@ -197,11 +211,11 @@ def generate_web_data(row, recommendation, y2_table_text: str, docs_dir: Path) -
         "week": row.week,
         "quarter": row.quarter,
         "metrics": {
-            "q2_okr": row.q2_okr,
-            "q2_outlook": row.q2_outlook,
-            "gap": row.q2_outlook - row.q2_okr,
+            "q2_okr": q2_okr,
+            "q2_outlook": q2_outlook,
+            "gap": q2_outlook - q2_okr,
             "gap_pct": round(q2_gap, 1),
-            "cumulative": row.cumulative_enrollments,
+            "cumulative": q2_cumulative,
             "remaining_weeks": row.remaining_weeks,
             "forecast_rate": row.forecast_enrollments,
         },

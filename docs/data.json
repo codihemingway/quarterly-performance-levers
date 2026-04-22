@@ -3,11 +3,11 @@
   "week": 5,
   "quarter": "Q2 2026",
   "metrics": {
-    "q2_okr": 351000,
-    "q2_outlook": 357000,
-    "gap": 6000,
+    "q2_okr": 351170,
+    "q2_outlook": 357101,
+    "gap": 5931,
     "gap_pct": 1.7,
-    "cumulative": 194500,
+    "cumulative": 95904,
     "remaining_weeks": 7,
     "forecast_rate": 22500
   },
