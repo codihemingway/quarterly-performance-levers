@@ -26,7 +26,7 @@ _DM_TOUCHPOINTS_COL = "dm_qualified_volume"
 _DM_ENROLLMENTS_COL = "dm_enrollments_deferred"
 
 
-def _get_current_week_row(rows: list[dict]) -> dict | None:
+def _get_current_week_row(rows: list[dict]) -> "dict | None":
     """Return the row for the current or next upcoming decision date."""
     from datetime import date
     today = date.today().isoformat()
@@ -37,7 +37,7 @@ def _get_current_week_row(rows: list[dict]) -> dict | None:
     return rows[-1] if rows else None
 
 
-def _fmt_date(val) -> str | None:
+def _fmt_date(val) -> "str | None":
     """Format a date value as 'Apr 6, 2026'."""
     if not val:
         return None
@@ -185,11 +185,11 @@ def _run_sql(sql: str, host: str, token: str, warehouse_id: str) -> list[dict]:
     result = resp.json()
     statement_id = result["statement_id"]
 
-    for _ in range(30):
+    for _ in range(120):
         state = result.get("status", {}).get("state", "")
         if state in ("SUCCEEDED", "FAILED", "CANCELED", "CLOSED"):
             break
-        time.sleep(3)
+        time.sleep(5)
         poll = requests.get(f"{base}/{statement_id}", headers=headers, timeout=30)
         poll.raise_for_status()
         result = poll.json()
@@ -274,15 +274,31 @@ def fetch_q2_metrics(host: str = None, token: str = None, warehouse_id: str = No
 
 def fetch_y2_renewals(host: str = None, token: str = None, warehouse_id: str = None) -> list[dict]:
     """
-    Run y2_renewals.sql against Databricks and return weekly renewal data:
+    Run y2_renewals.sql against Databricks and return weekly renewal data.
+
+    The query returns one row per user per Y2+ subscription. This function
+    filters to year_count_sub >= 2, then aggregates by week (Monday) into:
       [
-        {"week": "Apr 6, 2026", "volume": 210000, "okr": 215000},
-        ...
+        {
+          "week": "Apr 6, 2026",
+          "volume": int,                    # total actuals (backward compat)
+          "okr": 0,                         # no OKR embedded in this query
+          "enso_renewals": int,
+          "wph_or_chronic_renewals": int,   # wph_renewal + chronic_renewal
+          "unmarketed_renewals": int,
+          "enso_okr": 0, "chronic_wph_okr": 0, "unmarketed_expected": 0,
+          "paid_renewals": int,
+          "unpaid_renewals": int,
+          "organic_renewals": int,
+          "paid_okr": 0, "unpaid_okr": 0, "organic_okr": 0,
+          "baseline_forecast": 0, "okr_forecast": 0,
+        }, ...
       ]
-    Rows are aggregated by week (Monday), summing enso + wph_or_chronic + unmarketed renewals.
-    Raises RuntimeError if credentials are missing or the query fails.
+    outreach_type_attribution values: enso_renewal, wph_renewal, chronic_renewal, unmarketed
+    y2_renewal_type values: paid_renewal, unpaid_renewal, organic_renewal
     """
     from datetime import date, timedelta
+    from collections import defaultdict
 
     host = host or os.environ.get("DATABRICKS_HOST", "").rstrip("/")
     token = token or os.environ.get("DATABRICKS_TOKEN", "")
@@ -300,18 +316,6 @@ def fetch_y2_renewals(host: str = None, token: str = None, warehouse_id: str = N
     if not rows:
         raise RuntimeError("Y2 renewals query returned no rows.")
 
-    def _int(val):
-        try:
-            return int(float(val or 0))
-        except (TypeError, ValueError):
-            return 0
-
-    def _float(val):
-        try:
-            return float(val or 0)
-        except (TypeError, ValueError):
-            return 0.0
-
     def _week_start(date_str: str):
         """Return the Monday of the week containing date_str."""
         try:
@@ -320,36 +324,45 @@ def fetch_y2_renewals(host: str = None, token: str = None, warehouse_id: str = N
         except (ValueError, TypeError):
             return None
 
-    # Aggregate daily rows into weekly buckets
-    from collections import defaultdict
+    # Aggregate user-level rows into weekly buckets
     weekly: dict = defaultdict(lambda: {
         "enso_renewals": 0, "wph_or_chronic_renewals": 0, "unmarketed_renewals": 0,
         "paid_renewals": 0, "unpaid_renewals": 0, "organic_renewals": 0,
-        "enso_okr": 0.0, "chronic_wph_okr": 0.0, "unmarketed_expected": 0.0,
-        "paid_okr": 0.0, "unpaid_okr": 0.0, "organic_okr": 0.0,
-        "baseline_forecast": 0.0, "okr_forecast": 0.0,
     })
 
     for row in rows:
-        day_str = row.get("starts_at_max", "")
+        # New query is user-level; filter to Y2+ subscriptions only
+        try:
+            year_count = int(float(row.get("year_count_sub") or 0))
+        except (TypeError, ValueError):
+            year_count = 0
+        if year_count < 2:
+            continue
+
+        day_str = row.get("starts_at", "")
         monday = _week_start(day_str)
         if monday is None:
             continue
+
         w = weekly[monday]
-        w["enso_renewals"]           += _int(row.get("enso_renewals"))
-        w["wph_or_chronic_renewals"] += _int(row.get("wph_or_chronic_renewals"))
-        w["unmarketed_renewals"]     += _int(row.get("unmarketed_renewals"))
-        w["paid_renewals"]           += _int(row.get("paid_renewals"))
-        w["unpaid_renewals"]         += _int(row.get("unpaid_renewals"))
-        w["organic_renewals"]        += _int(row.get("organic_renewals"))
-        w["enso_okr"]                += _float(row.get("enso_okr", 0))
-        w["chronic_wph_okr"]         += _float(row.get("chronic_wph_okr", 0))
-        w["unmarketed_expected"]     += _float(row.get("unmarketed_expected", 0))
-        w["paid_okr"]                += _float(row.get("paid_okr", 0))
-        w["unpaid_okr"]              += _float(row.get("unpaid_okr", 0))
-        w["organic_okr"]             += _float(row.get("organic_okr", 0))
-        w["baseline_forecast"]       += _float(row.get("baseline_forecast", 0))
-        w["okr_forecast"]            += _float(row.get("okr_forecast", 0))
+
+        # By user type (outreach_type_attribution)
+        outreach = (row.get("outreach_type_attribution") or "").lower()
+        if outreach == "enso_renewal":
+            w["enso_renewals"] += 1
+        elif outreach in ("wph_renewal", "chronic_renewal"):
+            w["wph_or_chronic_renewals"] += 1
+        elif outreach == "unmarketed":
+            w["unmarketed_renewals"] += 1
+
+        # By channel (y2_renewal_type)
+        renewal_type = (row.get("y2_renewal_type") or "").lower()
+        if renewal_type == "paid_renewal":
+            w["paid_renewals"] += 1
+        elif renewal_type == "unpaid_renewal":
+            w["unpaid_renewals"] += 1
+        elif renewal_type == "organic_renewal":
+            w["organic_renewals"] += 1
 
     result = []
     for monday in sorted(weekly.keys()):
@@ -359,24 +372,24 @@ def fetch_y2_renewals(host: str = None, token: str = None, warehouse_id: str = N
             "week":                    monday.strftime("%b %-d, %Y"),
             # kept for backward compat
             "volume":                  total,
-            "okr":                     round(w["okr_forecast"]),
+            "okr":                     0,
             # by user type
             "enso_renewals":           w["enso_renewals"],
             "wph_or_chronic_renewals": w["wph_or_chronic_renewals"],
             "unmarketed_renewals":     w["unmarketed_renewals"],
-            "enso_okr":                round(w["enso_okr"]),
-            "chronic_wph_okr":         round(w["chronic_wph_okr"]),
-            "unmarketed_expected":     round(w["unmarketed_expected"]),
+            "enso_okr":                0,
+            "chronic_wph_okr":         0,
+            "unmarketed_expected":     0,
             # by channel
             "paid_renewals":           w["paid_renewals"],
             "unpaid_renewals":         w["unpaid_renewals"],
             "organic_renewals":        w["organic_renewals"],
-            "paid_okr":                round(w["paid_okr"]),
-            "unpaid_okr":              round(w["unpaid_okr"]),
-            "organic_okr":             round(w["organic_okr"]),
-            # forecast
-            "baseline_forecast":       round(w["baseline_forecast"]),
-            "okr_forecast":            round(w["okr_forecast"]),
+            "paid_okr":                0,
+            "unpaid_okr":              0,
+            "organic_okr":             0,
+            # forecast (not in this query)
+            "baseline_forecast":       0,
+            "okr_forecast":            0,
         })
 
     return result

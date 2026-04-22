@@ -811,15 +811,16 @@ function renderPage(data) {
   const gapEl   = document.getElementById('m-gap');
   const badgeEl = document.getElementById('m-gap-badge');
   gapEl.textContent = fmtSign(m.gap);
-  gapEl.className   = 'value ' + (m.gap >= 0 ? 'gap-positive' : 'gap-negative');
+  // Gap is "fine" (green) if within 2% of OKR; red only when > 2% below
+  gapEl.className   = 'value ' + (m.gap_pct >= -2 ? 'gap-positive' : 'gap-negative');
   if (m.gap_pct >= 0) {
     badgeEl.textContent = `+${m.gap_pct}% · On Track`;
     badgeEl.className   = 'badge badge-green';
   } else if (m.gap_pct >= -2) {
-    badgeEl.textContent = `${m.gap_pct}% · Watch`;
-    badgeEl.className   = 'badge badge-yellow';
+    badgeEl.textContent = `${m.gap_pct}% · No Action Needed`;
+    badgeEl.className   = 'badge badge-green';
   } else {
-    badgeEl.textContent = `${m.gap_pct}% · At Risk`;
+    badgeEl.textContent = `${m.gap_pct}% · Action Required`;
     badgeEl.className   = 'badge badge-red';
   }
 

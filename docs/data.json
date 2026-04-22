@@ -1348,13 +1348,13 @@
       "subtitle": "DM Pipeline Supporting Q2",
       "workback_days": 0,
       "urgency_label": "No action needed",
-      "rationale": "Q2 outlook (357,000) is above the Q2 OKR (351,000). Prior direct mail campaigns are driving enrollment pipeline into Q2. Email reactivation would defer Q2 enrollments to Q3 \u2014 the wrong direction.",
+      "rationale": "Q2 outlook (357,101) is +1.7% vs the Q2 OKR (351,170). Gap is within the 2% action threshold \u2014 no lever needed. Prior direct mail campaigns are driving enrollment pipeline into Q2.",
       "estimated_impact": "Q2 outlook is tracking +6,000 vs OKR. No lever action needed; monitor quarterly pacing.",
-      "action": "Hold all channel volumes as planned. Reassess if Q2 outlook drops below OKR.",
+      "action": "Hold all channel volumes as planned. Reassess if Q2 outlook drops more than 2% below OKR.",
       "execution_steps": [
         "No lever action required this week.",
         "Continue monitoring quarterly pacing against OKR.",
-        "Reassess if gap widens further below OKR.",
+        "Reassess if Q2 outlook drops more than 2% below OKR.",
         "Publish updated playbook to the CS/EM channel."
       ]
     },

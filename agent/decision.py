@@ -41,29 +41,29 @@ def recommend_lever(row: ModeRow) -> Optional[LeverRecommendation]:
     q2_gap = calculate_q2_gap(row)
     weeks_left = row.remaining_weeks
 
-    # Q2 on track — no lever needed; DM pipeline is supporting pacing
-    if q2_gap >= 0:
+    # Q2 on track — no lever needed; gap within 2% of OKR is acceptable
+    if q2_gap >= -2.0:
         return LeverRecommendation(
             name="No Action Required — DM Pipeline Supporting Q2",
             rationale=(
-                f"Q2 outlook ({row.q2_outlook:,}) is {q2_gap:+.1f}% above the Q2 OKR ({row.q2_okr:,}). "
-                "Prior direct mail campaigns are driving enrollment pipeline into Q2. "
-                "Email reactivation would defer Q2 enrollments to Q3 — the wrong direction."
+                f"Q2 outlook ({row.q2_outlook:,}) is {q2_gap:+.1f}% vs the Q2 OKR ({row.q2_okr:,}). "
+                "Gap is within the 2% action threshold — no lever needed. "
+                "Prior direct mail campaigns are driving enrollment pipeline into Q2."
             ),
             estimated_impact=(
-                f"Q2 outlook is tracking +{row.q2_outlook - row.q2_okr:,} vs OKR. "
+                f"Q2 outlook is tracking {row.q2_outlook - row.q2_okr:+,} vs OKR. "
                 "No lever action needed; monitor quarterly pacing."
             ),
             workback_days=0,
-            action="Hold all channel volumes as planned. Reassess if Q2 outlook drops below OKR.",
+            action="Hold all channel volumes as planned. Reassess if Q2 outlook drops more than 2% below OKR.",
             email_touchpoints=row.email_touchpoints,
             direct_mail_touchpoints=row.direct_mail_touchpoints,
             email_shifted_enrollments=int(row.email_touchpoints * 0.70),
             dm_shifted_enrollments=int(row.direct_mail_touchpoints * 0.60),
         )
 
-    # Q2 under-pacing with time to act — email reactivation
-    if q2_gap < 0 and weeks_left >= 4:
+    # Q2 under-pacing by more than 2% with time to act — email reactivation
+    if q2_gap < -2.0 and weeks_left >= 4:
         if qualifies_for_email_reactivation(row):
             volume_pct = 70
             impact = int(row.email_touchpoints * 0.7)
@@ -101,8 +101,8 @@ def recommend_lever(row: ModeRow) -> Optional[LeverRecommendation]:
             dm_shifted_enrollments=int(row.direct_mail_touchpoints * 0.60),
         )
 
-    # Q2 under-pacing, too late for email reactivation
-    if q2_gap < 0 and weeks_left < 4:
+    # Q2 under-pacing by more than 2%, too late for email reactivation
+    if q2_gap < -2.0 and weeks_left < 4:
         return LeverRecommendation(
             name="Throttle Pause",
             rationale=(

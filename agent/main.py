@@ -127,19 +127,19 @@ def generate_web_data(row, recommendation, y2_table_text: str, docs_dir: Path) -
             "workback_days": 0,
             "urgency_label": "No action needed",
             "rationale": (
-                f"Q2 outlook ({q2_outlook:,}) is {'above' if q2_outlook >= q2_okr else 'below'} the Q2 OKR ({q2_okr:,}). "
-                "Prior direct mail campaigns are driving enrollment pipeline into Q2. "
-                "Email reactivation would defer Q2 enrollments to Q3 — the wrong direction."
+                f"Q2 outlook ({q2_outlook:,}) is {q2_gap:+.1f}% vs the Q2 OKR ({q2_okr:,}). "
+                "Gap is within the 2% action threshold — no lever needed. "
+                "Prior direct mail campaigns are driving enrollment pipeline into Q2."
             ),
             "estimated_impact": (
                 f"Q2 outlook is tracking {q2_outlook - q2_okr:+,} vs OKR. "
                 "No lever action needed; monitor quarterly pacing."
             ),
-            "action": "Hold all channel volumes as planned. Reassess if Q2 outlook drops below OKR.",
+            "action": "Hold all channel volumes as planned. Reassess if Q2 outlook drops more than 2% below OKR.",
             "execution_steps": [
                 "No lever action required this week.",
                 "Continue monitoring quarterly pacing against OKR.",
-                "Reassess if Q2 outlook drops below OKR.",
+                "Reassess if Q2 outlook drops more than 2% below OKR.",
                 "Publish updated playbook to the CS/EM channel.",
             ],
         },
