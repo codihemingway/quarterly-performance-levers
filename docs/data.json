@@ -1,0 +1,117 @@
+{
+  "generated_at": "Apr 22, 2026",
+  "week": 5,
+  "quarter": "Q2 2026",
+  "metrics": {
+    "q2_okr": 351000,
+    "q2_outlook": 352000,
+    "gap": 1000,
+    "gap_pct": 0.3,
+    "cumulative": 194500,
+    "remaining_weeks": 7,
+    "forecast_rate": 22500
+  },
+  "touchpoints": {
+    "email": {
+      "touchpoints": 5781,
+      "shifted": 4046
+    },
+    "dm": {
+      "touchpoints": 8122,
+      "shifted": 4873
+    }
+  },
+  "y2_deferred": [
+    {
+      "week": "Apr 6, 2026",
+      "volume": 210000
+    },
+    {
+      "week": "Apr 13, 2026",
+      "volume": 229000
+    },
+    {
+      "week": "Apr 20, 2026",
+      "volume": 36000
+    },
+    {
+      "week": "May 4, 2026",
+      "volume": 130000
+    },
+    {
+      "week": "May 11, 2026",
+      "volume": 149000
+    },
+    {
+      "week": "May 18, 2026",
+      "volume": 29000
+    }
+  ],
+  "recommended_lever_id": "no_action",
+  "levers": [
+    {
+      "id": "no_action",
+      "name": "No Action Required",
+      "subtitle": "DM Pipeline Supporting Q2",
+      "workback_days": 0,
+      "urgency_label": "No action needed",
+      "rationale": "Q2 outlook (352,000) is above the Q2 OKR (351,000). Prior direct mail campaigns are driving enrollment pipeline into Q2. Email reactivation would defer Q2 enrollments to Q3 \u2014 the wrong direction.",
+      "estimated_impact": "Q2 outlook is tracking +1,000 vs OKR. No lever action needed; monitor quarterly pacing.",
+      "action": "Hold all channel volumes as planned. Reassess if Q2 outlook drops below OKR.",
+      "execution_steps": [
+        "No lever action required this week.",
+        "Continue monitoring quarterly pacing against OKR.",
+        "Reassess if Q2 outlook drops below OKR.",
+        "Publish updated playbook to the CS/EM channel."
+      ]
+    },
+    {
+      "id": "email_reactivation",
+      "name": "Email Reactivation",
+      "subtitle": "Defer 70% of email volume (4,046) to Q3",
+      "workback_days": 7,
+      "urgency_label": "Decision needed within 7 days",
+      "rationale": "Q2 outlook (352,000) is below OKR (351,000) with 7 weeks remaining. Email reactivation is eligible under marketing/reactivation criteria.",
+      "estimated_impact": "Defer 70% of email volume from the next eligible window. Estimated movement: -4,046 Q2 enrollments to Q3.",
+      "action": "Defer reactivation volume and update campaign calendar.",
+      "execution_steps": [
+        "Confirm decision by the next working day.",
+        "Coordinate with GROMO, CS, and EM to update campaign schedules.",
+        "Apply eligibility filters and freeze affected audience segments.",
+        "Publish updated playbook to the CS/EM channel."
+      ]
+    },
+    {
+      "id": "mailer_deferment",
+      "name": "Mailer Flat Deferment",
+      "subtitle": "Defer 100% of DM volume (8,122) to Q3",
+      "workback_days": 30,
+      "urgency_label": "Decision needed within 30 days",
+      "rationale": "Q2 outlook is above OKR with 7 weeks remaining. Use standard mail deferment to shift volume into next quarter.",
+      "estimated_impact": "Defer 100% of qualifying mail volume into next quarter.",
+      "action": "Pause outbound mailer shipments and update the mail calendar.",
+      "execution_steps": [
+        "Confirm decision by the next working day.",
+        "Coordinate with GROMO, CS, and EM to update campaign schedules.",
+        "Apply eligibility filters and freeze affected audience segments.",
+        "Publish updated playbook to the CS/EM channel."
+      ]
+    },
+    {
+      "id": "throttle_pause",
+      "name": "Throttle Pause",
+      "subtitle": "Unthrottle next available send window",
+      "workback_days": 6,
+      "urgency_label": "Decision needed within 6 days",
+      "rationale": "Q2 outlook is below OKR with only 7 weeks remaining. Throttle pause can free up volume with a short workback.",
+      "estimated_impact": "Unthrottle planned communications for the next available window.",
+      "action": "Pause planned sends and align with media calendar.",
+      "execution_steps": [
+        "Confirm decision by the next working day.",
+        "Coordinate with GROMO, CS, and EM to update campaign schedules.",
+        "Apply eligibility filters and freeze affected audience segments.",
+        "Publish updated playbook to the CS/EM channel."
+      ]
+    }
+  ]
+}

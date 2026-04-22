@@ -1,0 +1,76 @@
+# Weekly Lever Playbook
+
+**Quarter:** {{ quarter }}
+**Week:** {{ week }}
+
+## Q2 At-a-Glance
+
+| | Enrollments |
+|---|---|
+| Q2 OKR | {{ "{:,}".format(q2_okr) }} |
+| Q2 Outlook | {{ "{:,}".format(q2_outlook) }} |
+| Gap to OKR | {{ "{:+,}".format(q2_outlook - q2_okr) }} |
+
+**How the Q2 Outlook is calculated:**
+Cumulative enrollments through Week {{ week }} ({{ "{:,}".format(cumulative_enrollments) }}) + {{ remaining_weeks }} remaining weeks × weekly forecast rate ({{ "{:,}".format(forecast_enrollments) }}/week) = **{{ "{:,}".format(cumulative_enrollments + remaining_weeks * forecast_enrollments) }}**
+
+## Channel Touchpoints (Q2 2026)
+
+| Channel | Qualifying Touchpoints | Shifted Enrollments |
+|---|---|---|
+| Email | {{ "{:,}".format(recommendation.email_touchpoints) }} | {{ "{:,}".format(recommendation.email_shifted_enrollments) }} |
+| Direct Mail | {{ "{:,}".format(recommendation.direct_mail_touchpoints) }} | {{ "{:,}".format(recommendation.dm_shifted_enrollments) }} |
+| **Total** | **{{ "{:,}".format(recommendation.email_touchpoints + recommendation.direct_mail_touchpoints) }}** | **{{ "{:,}".format(recommendation.email_shifted_enrollments + recommendation.dm_shifted_enrollments) }}** |
+
+## Recommendation
+
+**Recommended lever:** {{ recommendation.name }}
+
+**Rationale:** {{ recommendation.rationale }}
+
+**Estimated impact:** {{ recommendation.estimated_impact }}
+
+{% if recommendation.workback_days > 0 %}**Workback:** Decision needed within {{ recommendation.workback_days }} days
+
+{% endif %}**Action:** {{ recommendation.action }}
+
+## Execution Plan
+
+{% if recommendation.workback_days == 0 %}
+1. No lever action required this week.
+2. Continue monitoring quarterly pacing against OKR.
+3. Reassess if Q2 outlook drops below OKR.
+4. Publish updated playbook to the CS/EM channel.
+{% else %}
+1. Confirm decision by the next working day.
+2. Coordinate with GROMO, CS, and EM to update campaign schedules.
+3. Apply eligibility filters and freeze affected audience segments.
+4. Publish updated playbook to the CS/EM channel.
+{% endif %}
+
+## FAQ
+
+**Q: Why no lever this week?**
+{% if recommendation.workback_days == 0 %}
+A: Q2 outlook is on track. Prior direct mail campaigns are contributing to Q2 enrollment pipeline. Pulling email reactivation would move enrollments out of Q2 — the wrong direction.
+{% else %}
+A: The Q2 outlook gap is outside tolerance and timing aligns with the recommended lever's workback window.
+{% endif %}
+
+**Q: What should we watch for?**
+{% if recommendation.workback_days == 0 %}
+A: Monitor quarterly pacing. If Q2 outlook drops below OKR, revisit lever options.
+{% else %}
+A: Watch for Q2 outlook recovery after the lever is applied. Volume shifted to Q3 will reduce the Q2 forecast.
+{% endif %}
+
+**Q: Who owns execution?**
+A: GROMO owns the delivery plan, CS owns member communication, and EM owns channel activation.
+
+## Y2 Deferred Renewals by Sub End Date
+
+_Sourced from Mode Y2+ Analytics · parking lot tab_
+
+| Sub End Week | Deferred Enrollments |
+|---|---|
+| — | — |
