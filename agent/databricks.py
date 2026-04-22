@@ -322,27 +322,61 @@ def fetch_y2_renewals(host: str = None, token: str = None, warehouse_id: str = N
 
     # Aggregate daily rows into weekly buckets
     from collections import defaultdict
-    weekly: dict = defaultdict(lambda: {"volume": 0, "okr": 0.0})
+    weekly: dict = defaultdict(lambda: {
+        "enso_renewals": 0, "wph_or_chronic_renewals": 0, "unmarketed_renewals": 0,
+        "paid_renewals": 0, "unpaid_renewals": 0, "organic_renewals": 0,
+        "enso_okr": 0.0, "chronic_wph_okr": 0.0, "unmarketed_expected": 0.0,
+        "paid_okr": 0.0, "unpaid_okr": 0.0, "organic_okr": 0.0,
+        "baseline_forecast": 0.0, "okr_forecast": 0.0,
+    })
 
     for row in rows:
         day_str = row.get("starts_at_max", "")
         monday = _week_start(day_str)
         if monday is None:
             continue
-        total_renewals = (
-            _int(row.get("enso_renewals"))
-            + _int(row.get("wph_or_chronic_renewals"))
-            + _int(row.get("unmarketed_renewals"))
-        )
-        weekly[monday]["volume"] += total_renewals
-        weekly[monday]["okr"] += _float(row.get("okr_forecast", 0))
+        w = weekly[monday]
+        w["enso_renewals"]           += _int(row.get("enso_renewals"))
+        w["wph_or_chronic_renewals"] += _int(row.get("wph_or_chronic_renewals"))
+        w["unmarketed_renewals"]     += _int(row.get("unmarketed_renewals"))
+        w["paid_renewals"]           += _int(row.get("paid_renewals"))
+        w["unpaid_renewals"]         += _int(row.get("unpaid_renewals"))
+        w["organic_renewals"]        += _int(row.get("organic_renewals"))
+        w["enso_okr"]                += _float(row.get("enso_okr", 0))
+        w["chronic_wph_okr"]         += _float(row.get("chronic_wph_okr", 0))
+        w["unmarketed_expected"]     += _float(row.get("unmarketed_expected", 0))
+        w["paid_okr"]                += _float(row.get("paid_okr", 0))
+        w["unpaid_okr"]              += _float(row.get("unpaid_okr", 0))
+        w["organic_okr"]             += _float(row.get("organic_okr", 0))
+        w["baseline_forecast"]       += _float(row.get("baseline_forecast", 0))
+        w["okr_forecast"]            += _float(row.get("okr_forecast", 0))
 
     result = []
     for monday in sorted(weekly.keys()):
+        w = weekly[monday]
+        total = w["enso_renewals"] + w["wph_or_chronic_renewals"] + w["unmarketed_renewals"]
         result.append({
-            "week": monday.strftime("%b %-d, %Y"),
-            "volume": weekly[monday]["volume"],
-            "okr": round(weekly[monday]["okr"]),
+            "week":                    monday.strftime("%b %-d, %Y"),
+            # kept for backward compat
+            "volume":                  total,
+            "okr":                     round(w["okr_forecast"]),
+            # by user type
+            "enso_renewals":           w["enso_renewals"],
+            "wph_or_chronic_renewals": w["wph_or_chronic_renewals"],
+            "unmarketed_renewals":     w["unmarketed_renewals"],
+            "enso_okr":                round(w["enso_okr"]),
+            "chronic_wph_okr":         round(w["chronic_wph_okr"]),
+            "unmarketed_expected":     round(w["unmarketed_expected"]),
+            # by channel
+            "paid_renewals":           w["paid_renewals"],
+            "unpaid_renewals":         w["unpaid_renewals"],
+            "organic_renewals":        w["organic_renewals"],
+            "paid_okr":                round(w["paid_okr"]),
+            "unpaid_okr":              round(w["unpaid_okr"]),
+            "organic_okr":             round(w["organic_okr"]),
+            # forecast
+            "baseline_forecast":       round(w["baseline_forecast"]),
+            "okr_forecast":            round(w["okr_forecast"]),
         })
 
     return result

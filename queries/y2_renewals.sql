@@ -15,184 +15,178 @@
 --   okr_forecast           - daily OKR forecast
 -- =============================================================================
 
-create or replace temp view renewals_okr_by_quarter as
+with renewals_okr_by_quarter as (
     select *
     from values
         (make_date(year(current_date()), 1, 1), 67000)
         , (make_date(year(current_date()), 4, 1), 86000)
         , (make_date(year(current_date()), 7, 1), 65000)
         , (make_date(year(current_date()), 10, 1), 63000)
-    as renewal_data(quarter_start_date, renewals_okr);
+    as renewal_data(quarter_start_date, renewals_okr)
 
-create or replace temp view monthly_okrs as
-    with ffc_baseline_current as (
-        select *
-        from (
-            select customer_id
-                , day_at
-                , client_type
-                , estimate_type
-                , estimate
-                , coalesce(prop_acute,0) as prop_acute
-                , row_number() over (partition by customer_id, day_at, client_type, estimate_type order by forecast_at asc) as row_num
-            from dbt_prod.fct_forecasts_clients
-            where true
-                and estimate_type in ('y2', 'y3+')
-                and day_at between make_date(year(current_date()), 1, 1) and make_date(year(current_date()), 3, 31)
-                and forecast_at between make_date(year(current_date()), 1, 1) - interval '7 days' and make_date(year(current_date()), 1, 1)
+), ffc_baseline_current as (
+    select *
+    from (
+        select customer_id
+            , day_at
+            , client_type
+            , estimate_type
+            , estimate
+            , coalesce(prop_acute,0) as prop_acute
+            , row_number() over (partition by customer_id, day_at, client_type, estimate_type order by forecast_at asc) as row_num
+        from dbt_prod.fct_forecasts_clients
+        where true
+            and estimate_type in ('y2', 'y3+')
+            and day_at between make_date(year(current_date()), 1, 1) and make_date(year(current_date()), 3, 31)
+            and forecast_at between make_date(year(current_date()), 1, 1) - interval '7 days' and make_date(year(current_date()), 1, 1)
 
-            union
-            select customer_id
-                , day_at
-                , client_type
-                , estimate_type
-                , estimate
-                , coalesce(prop_acute,0) as prop_acute
-                , row_number() over (partition by customer_id, day_at, client_type, estimate_type order by forecast_at asc) as row_num
-            from dbt_prod.fct_forecasts_clients
-            where true
-                and estimate_type in ('y2', 'y3+')
-                and day_at between make_date(year(current_date()), 4, 1) and make_date(year(current_date()), 6, 30)
-                and forecast_at between make_date(year(current_date()), 4, 1) - interval '7 days' and make_date(year(current_date()), 4, 1)
+        union
+        select customer_id
+            , day_at
+            , client_type
+            , estimate_type
+            , estimate
+            , coalesce(prop_acute,0) as prop_acute
+            , row_number() over (partition by customer_id, day_at, client_type, estimate_type order by forecast_at asc) as row_num
+        from dbt_prod.fct_forecasts_clients
+        where true
+            and estimate_type in ('y2', 'y3+')
+            and day_at between make_date(year(current_date()), 4, 1) and make_date(year(current_date()), 6, 30)
+            and forecast_at between make_date(year(current_date()), 4, 1) - interval '7 days' and make_date(year(current_date()), 4, 1)
 
-            union
-            select customer_id
-                , day_at
-                , client_type
-                , estimate_type
-                , estimate
-                , coalesce(prop_acute,0) as prop_acute
-                , row_number() over (partition by customer_id, day_at, client_type, estimate_type order by forecast_at asc) as row_num
-            from dbt_prod.fct_forecasts_clients
-            where true
-                and estimate_type in ('y2', 'y3+')
-                and day_at between make_date(year(current_date()), 7, 1) and make_date(year(current_date()), 9, 30)
-                and forecast_at between make_date(year(current_date()), 7, 1) - interval '7 days' and make_date(year(current_date()), 7, 1)
+        union
+        select customer_id
+            , day_at
+            , client_type
+            , estimate_type
+            , estimate
+            , coalesce(prop_acute,0) as prop_acute
+            , row_number() over (partition by customer_id, day_at, client_type, estimate_type order by forecast_at asc) as row_num
+        from dbt_prod.fct_forecasts_clients
+        where true
+            and estimate_type in ('y2', 'y3+')
+            and day_at between make_date(year(current_date()), 7, 1) and make_date(year(current_date()), 9, 30)
+            and forecast_at between make_date(year(current_date()), 7, 1) - interval '7 days' and make_date(year(current_date()), 7, 1)
 
-            union
-            select customer_id
-                , day_at
-                , client_type
-                , estimate_type
-                , estimate
-                , coalesce(prop_acute,0) as prop_acute
-                , row_number() over (partition by customer_id, day_at, client_type, estimate_type order by forecast_at asc) as row_num
-            from dbt_prod.fct_forecasts_clients
-            where true
-                and estimate_type in ('y2', 'y3+')
-                and day_at between make_date(year(current_date()), 10, 1) and make_date(year(current_date()), 12, 31)
-                and forecast_at between make_date(year(current_date()), 10, 1) - interval '7 days' and make_date(year(current_date()), 10, 1)
+        union
+        select customer_id
+            , day_at
+            , client_type
+            , estimate_type
+            , estimate
+            , coalesce(prop_acute,0) as prop_acute
+            , row_number() over (partition by customer_id, day_at, client_type, estimate_type order by forecast_at asc) as row_num
+        from dbt_prod.fct_forecasts_clients
+        where true
+            and estimate_type in ('y2', 'y3+')
+            and day_at between make_date(year(current_date()), 10, 1) and make_date(year(current_date()), 12, 31)
+            and forecast_at between make_date(year(current_date()), 10, 1) - interval '7 days' and make_date(year(current_date()), 10, 1)
+    )
+    where true
+        and row_num = 1
+
+), ffc_baseline_future as (
+    select *
+    from (
+        select customer_id
+            , day_at
+            , client_type
+            , estimate_type
+            , estimate
+            , coalesce(prop_acute,0) as prop_acute
+            , row_number() over (partition by customer_id, day_at, client_type, estimate_type order by forecast_at asc) as row_num
+        from dbt_prod.fct_forecasts_clients
+        where true
+            and estimate_type in ('y2', 'y3+')
+            and day_at between (select max(day_at) + interval '1 day' from ffc_baseline_current) and make_date(year(current_date()), 12, 31)
+            and forecast_at = (select max(forecast_at) from dbt_prod.fct_forecasts_clients)
         )
-        where true
-            and row_num = 1
+    where true
+        and row_num = 1
 
-    ), ffc_baseline_future as (
-        select *
-        from (
-            select customer_id
-                , day_at
-                , client_type
-                , estimate_type
-                , estimate
-                , coalesce(prop_acute,0) as prop_acute
-                , row_number() over (partition by customer_id, day_at, client_type, estimate_type order by forecast_at asc) as row_num
-            from dbt_prod.fct_forecasts_clients
-            where true
-                and estimate_type in ('y2', 'y3+')
-                and day_at between (select max(day_at) + interval '1 day' from ffc_baseline_current) and make_date(year(current_date()), 12, 31)
-                and forecast_at = (select max(forecast_at) from dbt_prod.fct_forecasts_clients)
-            )
-        where true
-            and row_num = 1
+), ffc_baseline as (
+    select * from ffc_baseline_current
+    union
+    select * from ffc_baseline_future
 
-    ), ffc_baseline as (
-        select *
-        from ffc_baseline_current
+), ffc_program_baseline as (
+    select customer_id
+        , day_at
+        , client_type
+        , estimate_type
+        , 'chronic' as program
+        , estimate * (1-prop_acute) as forecast
+    from ffc_baseline
+    union all
+    select customer_id
+        , day_at
+        , client_type
+        , estimate_type
+        , 'acute' as program
+        , estimate * prop_acute as forecast
+    from ffc_baseline
 
-        union
-        select *
-        from ffc_baseline_future
+), baseline_fct_daily as (
+    select 'Y2+' AS forecast_type
+        , dd.date_day as day_at
+        , (s.`.mean`)/7 as baseline_forecast
+    from prod_sandbox.dbt_tbalani.simulated_q1_baseline_y2_20260212 as s
+    left join dbt_prod.dim_dates as dd
+        on s.date_at = dd.week_start_date
+    where true
+        and s.client_type = '<aggregated>'
+        and dd.date_day between '2026-01-01' and '2026-03-31'
 
-    ), ffc_program_baseline as (
-        select customer_id
-            , day_at
-            , client_type
-            , estimate_type
-            , 'chronic' as program
-            , estimate * (1-prop_acute) as forecast
-        from ffc_baseline
-        union all
+    union
 
-        select customer_id
-            , day_at
-            , client_type
-            , estimate_type
-            , 'acute' as program
-            , estimate * prop_acute as forecast
-        from ffc_baseline
+    select 'Y2+' AS forecast_type
+        , day_at
+        , sum(forecast) as baseline_forecast
+    from ffc_program_baseline
+    where true
+        and day_at between '2026-04-01' and '2026-12-31'
+    group by all
 
-    ), baseline_fct_daily as (
-        select 'Y2+' AS forecast_type
-            , dd.date_day as day_at
-            , (s.`.mean`)/7 as baseline_forecast
-        from prod_sandbox.dbt_tbalani.simulated_q1_baseline_y2_20260212 as s
-        left join dbt_prod.dim_dates as dd
-            on s.date_at = dd.week_start_date
-        where true
-            and s.client_type = '<aggregated>'
-            and dd.date_day between '2026-01-01' and '2026-03-31'
+), quarterly_baseline as (
+    select date_trunc('quarter', day_at) as quarter_start_date
+        , sum(baseline_forecast) as baseline_forecast
+    from baseline_fct_daily
+    group by all
 
-        union
+), quarterly_multiplier as (
+    select qb.*
+        , okr.renewals_okr
+        , okr.renewals_okr / qb.baseline_forecast as multiplier
+    from quarterly_baseline as qb
+    left join renewals_okr_by_quarter as okr
+        on qb.quarter_start_date = okr.quarter_start_date
 
-        select 'Y2+' AS forecast_type
-            , day_at
-            , sum(forecast) as baseline_forecast
-        from ffc_program_baseline
-        where true
-            and day_at between '2026-04-01' and '2026-12-31'
-        group by all
+), baseline_okr_daily as (
+    select bd.day_at
+        , bd.baseline_forecast
+        , bd.baseline_forecast * qm.multiplier as okr_forecast
+    from baseline_fct_daily as bd
+    left join quarterly_multiplier as qm
+        on date_trunc('quarter', bd.day_at) = qm.quarter_start_date
 
-    ), quarterly_baseline as (
-        select date_trunc('quarter', day_at) as quarter_start_date
-            , sum(baseline_forecast) as baseline_forecast
-        from baseline_fct_daily
-        group by all
+), baseline_okr_monthly as (
+    select date_trunc('day', day_at) as month_start_date
+        , sum(baseline_forecast) as baseline_forecast
+        , sum(okr_forecast) as okr_forecast
+    from baseline_okr_daily
+    group by all
 
-    ), quarterly_multiplier as (
-        select qb.*
-            , okr.renewals_okr
-            , okr.renewals_okr / qb.baseline_forecast as multiplier
-        from quarterly_baseline as qb
-        left join renewals_okr_by_quarter as okr
-            on qb.quarter_start_date = okr.quarter_start_date
-
-    ), baseline_okr_daily as (
-        select bd.day_at
-            , bd.baseline_forecast
-            , bd.baseline_forecast * qm.multiplier as okr_forecast
-        from baseline_fct_daily as bd
-        left join quarterly_multiplier as qm
-            on date_trunc('quarter', bd.day_at) = qm.quarter_start_date
-
-    ), baseline_okr_monthly as (
-        select date_trunc('day', day_at) as month_start_date
-            , sum(baseline_forecast) as baseline_forecast
-            , sum(okr_forecast) as okr_forecast
-        from baseline_okr_daily
-        group by all
-
-    ) select *
+), monthly_okrs as (
+    select *
         , okr_forecast * 0.55 as enso_okr
         , okr_forecast * 0.12 as chronic_wph_okr
         , okr_forecast * 0.33 as unmarketed_expected
-
         , okr_forecast * 0.45 as paid_okr
         , okr_forecast * 0.05 as unpaid_okr
         , okr_forecast * 0.50 as organic_okr
     from baseline_okr_monthly
-;
 
-with subs_base as (
+), subs_base as (
     select distinct user_id
         , subscription_start_date as subscription_starts_at
         , subscription_end_date as subscription_ends_at
@@ -227,7 +221,7 @@ with subs_base as (
         and (t.name like '%enable_enso%')
     group by tg.taggable_id
 
-), enso_eligible_clients as(
+), enso_eligible_clients as (
     select distinct client_id
     from public.public_client_configurations
     where configuration_id = 2

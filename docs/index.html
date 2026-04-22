@@ -81,6 +81,8 @@
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .table-scroll table { min-width: 760px; }
     .badge-muted { background: var(--border); color: var(--text-secondary); font-size: 0.7rem; padding: 2px 8px; border-radius: 99px; font-weight: 600; white-space: nowrap; }
+    .group-header { background: var(--lime-30); color: var(--evergreen); font-weight: 700; text-align: center; border-bottom: 1px solid var(--border); }
+    .thead-group th { padding: 6px 10px; }
     .table-card h3 { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
     table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
     th { text-align: left; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding-bottom: 8px; border-bottom: 1px solid var(--border); }
@@ -238,15 +240,28 @@
 
     <!-- ── Y2 Renewals ── -->
     <section>
-      <div class="tables-grid tables-single">
-        <div class="card table-card">
-          <h3>Y2 Actual Renewals by Sub Start Date</h3>
+      <div class="card schedule-card">
+        <h3>Y2 Actual Renewals by Sub Start Week</h3>
+        <div class="table-scroll">
           <table>
-            <thead><tr>
-              <th>Sub Start Week</th>
-              <th class="num">Actual Renewals</th>
-              <th class="num">OKR</th>
-            </tr></thead>
+            <thead>
+              <tr class="thead-group">
+                <th rowspan="2">Sub Start Week</th>
+                <th colspan="3" class="num group-header">By User Type</th>
+                <th colspan="3" class="num group-header">By Channel</th>
+                <th colspan="2" class="num group-header">Total</th>
+              </tr>
+              <tr>
+                <th class="num">Enso</th>
+                <th class="num">WPH / Chronic</th>
+                <th class="num">Unmarketed</th>
+                <th class="num">Paid</th>
+                <th class="num">Unpaid</th>
+                <th class="num">Organic</th>
+                <th class="num">Actual</th>
+                <th class="num">OKR</th>
+              </tr>
+            </thead>
             <tbody id="y2-body"></tbody>
           </table>
         </div>
@@ -826,13 +841,20 @@ function renderPage(data) {
 
   // Y2 Renewals
   const y2Body = document.getElementById('y2-body');
-  y2Body.innerHTML = (data.y2_deferred && data.y2_deferred.length)
-    ? data.y2_deferred.map(r=>`<tr>
+  const y2Rows = data.y2_deferred || [];
+  y2Body.innerHTML = y2Rows.length
+    ? y2Rows.map(r => `<tr>
         <td>${r.week}</td>
-        <td class="num">${fmt(r.volume)}</td>
+        <td class="num">${fmt(r.enso_renewals ?? r.volume ?? 0)}</td>
+        <td class="num">${fmt(r.wph_or_chronic_renewals ?? 0)}</td>
+        <td class="num">${fmt(r.unmarketed_renewals ?? 0)}</td>
+        <td class="num">${fmt(r.paid_renewals ?? 0)}</td>
+        <td class="num">${fmt(r.unpaid_renewals ?? 0)}</td>
+        <td class="num">${fmt(r.organic_renewals ?? 0)}</td>
+        <td class="num"><strong>${fmt(r.volume ?? 0)}</strong></td>
         <td class="num">${r.okr != null ? fmt(r.okr) : '—'}</td>
       </tr>`).join('')
-    : '<tr><td colspan="3" style="color:var(--text-muted)">No data yet</td></tr>';
+    : '<tr><td colspan="9" style="color:var(--text-muted)">No data yet</td></tr>';
 
   allLevers     = data.levers;
   recommendedId = data.recommended_lever_id;
