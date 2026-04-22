@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Q2 Performance Levers · Hinge Health</title>
+  <title>Quarterly Performance Levers Weekly Report · Hinge Health</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -284,7 +284,7 @@
     <img src="hinge-health-logo.svg" alt="Hinge Health" />
   </a>
   <div class="header-divider"></div>
-  <div class="header-title" id="header-title">Q2 Performance Levers</div>
+  <div class="header-title" id="header-title">Quarterly Performance Levers Weekly Report</div>
   <div class="header-meta" id="header-meta"></div>
 </header>
 
@@ -402,9 +402,9 @@ function renderPlaybook(lever, isRec) {
 }
 
 function renderPage(data) {
-  document.title = `${data.quarter} Performance Levers · Hinge Health`;
+  document.title = `Quarterly Performance Levers Weekly Report · Hinge Health`;
   document.getElementById('header-title').textContent =
-    `${data.quarter} Performance Levers · Week ${data.week}`;
+    `Quarterly Performance Levers Weekly Report`;
   document.getElementById('header-meta').textContent = `Updated ${data.generated_at}`;
 
   const m = data.metrics;
