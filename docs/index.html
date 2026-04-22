@@ -160,6 +160,51 @@
     .doc-slack-box { background: #f4f6f8; border-left: 3px solid #4A154B; border-radius: 0 8px 8px 0; padding: 12px 14px; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.7; white-space: pre-wrap; margin-top: 6px; }
     .doc-placeholder { color: #ccc; font-style: italic; }
 
+    /* ── GROMO Execution ── */
+    .gromo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+    .gromo-card { background: var(--hh-white); border-radius: 14px; box-shadow: var(--shadow); padding: 18px 22px; }
+    .gromo-card-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--hh-green); margin-bottom: 12px; }
+    .gromo-form-group { margin-bottom: 10px; }
+    .gromo-form-group:last-child { margin-bottom: 0; }
+    .gromo-form-group label { display: block; font-size: 0.71rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+    .gromo-form-group input, .gromo-form-group select, .gromo-form-group textarea {
+      width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px;
+      font-size: 0.82rem; font-family: inherit; color: var(--text-primary); background: white;
+      outline: none; transition: border-color .15s, box-shadow .15s; resize: vertical;
+    }
+    .gromo-form-group input:focus, .gromo-form-group select:focus, .gromo-form-group textarea:focus {
+      border-color: var(--hh-green); box-shadow: 0 0 0 2px rgba(0,123,52,.1);
+    }
+    .gromo-form-group input[type="url"] { font-size: 0.78rem; }
+    .check-group { display: flex; flex-direction: column; gap: 5px; margin-top: 2px; }
+    .check-item { display: flex; align-items: center; gap: 7px; font-size: 0.8rem; color: var(--text-primary); cursor: pointer; }
+    .check-item input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--hh-green); cursor: pointer; margin: 0; flex-shrink: 0; }
+    .date-rows { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+    .date-row { display: flex; align-items: center; gap: 6px; }
+    .date-row input { flex: 1; }
+    .date-row .arrow { color: var(--text-muted); font-size: 0.9rem; flex-shrink: 0; }
+    .date-row .remove-btn { background: none; border: 1px solid #e5e7eb; border-radius: 6px; color: var(--text-muted); cursor: pointer; font-size: 0.75rem; padding: 3px 7px; flex-shrink: 0; transition: all .15s; }
+    .date-row .remove-btn:hover { border-color: #dc2626; color: #dc2626; }
+    .add-row-btn { margin-top: 6px; background: none; border: 1.5px dashed var(--border); border-radius: 8px; color: var(--hh-green); font-size: 0.78rem; font-weight: 600; font-family: inherit; padding: 5px 12px; cursor: pointer; width: 100%; transition: border-color .15s, background .15s; }
+    .add-row-btn:hover { border-color: var(--hh-green); background: #f0f9f4; }
+    .pat-row { display: flex; gap: 8px; align-items: center; }
+    .pat-row input { flex: 1; font-family: monospace; font-size: 0.78rem; }
+    .pat-save-btn { background: var(--hh-green-pale); border: none; border-radius: 8px; color: var(--hh-green-dark); font-size: 0.75rem; font-weight: 700; font-family: inherit; padding: 6px 12px; cursor: pointer; flex-shrink: 0; transition: background .15s; }
+    .pat-save-btn:hover { background: var(--hh-green-pale); opacity: .8; }
+    .pat-status { font-size: 0.7rem; margin-top: 4px; }
+    .pat-ok  { color: var(--hh-green); }
+    .pat-err { color: #dc2626; }
+    .gromo-submit-row { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+    .gromo-submit-btn { background: var(--hh-green); color: white; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 700; font-family: inherit; padding: 11px 28px; cursor: pointer; transition: background .15s, transform .1s; display: flex; align-items: center; gap: 8px; }
+    .gromo-submit-btn:hover { background: var(--hh-green-dark); transform: translateY(-1px); }
+    .gromo-submit-btn:disabled { opacity: .5; cursor: default; transform: none; }
+    .gromo-status { font-size: 0.82rem; font-weight: 600; }
+    .gromo-status.ok  { color: var(--hh-green); }
+    .gromo-status.err { color: #dc2626; }
+    .gromo-task-link { color: var(--hh-green); text-decoration: none; font-weight: 700; }
+    .gromo-task-link:hover { text-decoration: underline; }
+    @media (max-width: 900px) { .gromo-grid { grid-template-columns: 1fr; } }
+
     /* ── Footer ── */
     footer { text-align: center; font-size: 0.78rem; color: var(--text-muted); padding: 20px; }
     footer a { color: var(--hh-green); text-decoration: none; font-weight: 500; }
@@ -290,6 +335,130 @@
             <button class="copy-btn" id="copy-btn" onclick="copyFullPlaybook()">📋 Copy</button>
           </div>
           <div id="preview-doc"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── GROMO Execution ── -->
+    <section id="gromo-section">
+      <div class="section-label">GROMO Execution Request</div>
+      <div class="gromo-grid">
+
+        <!-- Left column: form -->
+        <div style="display:flex;flex-direction:column;gap:14px;">
+
+          <div class="gromo-card">
+            <div class="gromo-card-title">Request Details</div>
+            <div class="gromo-form-group">
+              <label>Lever Type</label>
+              <select id="g-lever">
+                <option value="email_reactivation">Email Reactivation</option>
+                <option value="mailer_deferment">Direct Mail Flat Deferment</option>
+                <option value="throttle_pause">Throttle Pause / Unthrottling</option>
+              </select>
+            </div>
+            <div class="gromo-form-group">
+              <label>% Volume to Defer / Move</label>
+              <input type="number" id="g-pct" min="1" max="100" placeholder="e.g. 60" style="width:120px">
+              <span style="font-size:0.8rem;color:var(--text-secondary);margin-left:6px;">%</span>
+            </div>
+            <div class="gromo-form-group">
+              <label>Requested By (ACQ Lead)</label>
+              <input type="text" id="g-requester" placeholder="e.g. Gabby Greenberg">
+            </div>
+            <div class="gromo-form-group">
+              <label>SFDC Bulk Upload Link <span style="color:#dc2626">*</span></label>
+              <input type="url" id="g-sfdc" placeholder="https://hingehealth.lightning.force.com/...">
+            </div>
+            <div class="gromo-form-group">
+              <label>Impacted Touchpoints Spreadsheet</label>
+              <input type="url" id="g-sheet" placeholder="Google Sheet URL">
+            </div>
+          </div>
+
+          <div class="gromo-card">
+            <div class="gromo-card-title">Date Changes (Original → New In-Home)</div>
+            <div class="date-rows" id="g-date-rows"></div>
+            <button class="add-row-btn" onclick="gromoAddDateRow()">+ Add Date</button>
+          </div>
+
+          <div class="gromo-card">
+            <div class="gromo-card-title">Qualifying Client Criteria</div>
+            <div class="gromo-form-group">
+              <label>Allows Marketing Reactivation</label>
+              <div class="check-group">
+                <label class="check-item"><input type="checkbox" id="g-reactiv-all" checked> Yes – All Channels</label>
+                <label class="check-item"><input type="checkbox" id="g-reactiv-email"> Yes – Email Only</label>
+              </div>
+            </div>
+            <div class="gromo-form-group">
+              <label>Marketing Activity Status</label>
+              <div class="check-group">
+                <label class="check-item"><input type="checkbox" id="g-status-approved" checked> Approved</label>
+                <label class="check-item"><input type="checkbox" id="g-status-high"> Awaiting Approval – High Likelihood</label>
+              </div>
+            </div>
+            <div class="gromo-form-group">
+              <label>Client Tiers</label>
+              <div class="check-group" style="flex-direction:row;gap:14px;">
+                <label class="check-item"><input type="checkbox" id="g-tier1" checked> Tier 1</label>
+                <label class="check-item"><input type="checkbox" id="g-tier2" checked> Tier 2</label>
+                <label class="check-item"><input type="checkbox" id="g-tier3" checked> Tier 3</label>
+              </div>
+            </div>
+            <div class="gromo-form-group">
+              <label>Sender</label>
+              <input type="text" id="g-sender" value="Hinge Health">
+            </div>
+          </div>
+
+          <div class="gromo-card">
+            <div class="gromo-card-title">Exclusions &amp; Notes for GROMO</div>
+            <div class="gromo-form-group">
+              <label>Client / Template Exclusions</label>
+              <textarea id="g-exclusions" rows="3" placeholder="e.g. Exclude: United Healthcare, ESI, BCBSTN&#10;Exclude: anything with 'Non-Standard' in template name&#10;Apply Cohesive Messaging Long suppression list"></textarea>
+            </div>
+            <div class="gromo-form-group">
+              <label>Additional Notes</label>
+              <textarea id="g-notes" rows="2" placeholder="Any other context for GROMO..."></textarea>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right column: Asana settings + preview + submit -->
+        <div style="display:flex;flex-direction:column;gap:14px;">
+
+          <div class="gromo-card">
+            <div class="gromo-card-title">Asana Settings</div>
+            <div class="gromo-form-group">
+              <label>Personal Access Token <span style="font-size:0.68rem;font-weight:400;color:var(--text-muted)">(saved in browser, never sent to server)</span></label>
+              <div class="pat-row">
+                <input type="password" id="g-pat" placeholder="1/123abc...">
+                <button class="pat-save-btn" onclick="gromoSavePat()">Save</button>
+              </div>
+              <div class="pat-status" id="g-pat-status"></div>
+            </div>
+            <div class="gromo-form-group" style="margin-top:8px;">
+              <label>Asana Project</label>
+              <input type="text" id="g-project" value="1210732698081814" placeholder="Asana project GID">
+            </div>
+          </div>
+
+          <div class="gromo-card" style="flex:1;">
+            <div class="gromo-card-title">Task Preview</div>
+            <div id="g-preview" style="font-size:0.8rem;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;min-height:200px;"></div>
+          </div>
+
+          <div class="gromo-card">
+            <div class="gromo-submit-row">
+              <button class="gromo-submit-btn" id="g-submit-btn" onclick="gromoSubmit()">
+                <span>Create Asana Task</span>
+              </button>
+              <div class="gromo-status" id="g-status"></div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
@@ -900,11 +1069,245 @@ fetch('data.json')
     document.getElementById('loading').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     renderPage(data);
+    gromoInit();
   })
   .catch(err => {
     document.getElementById('loading').textContent =
       'Could not load data.json — run the Python script first. (' + err.message + ')';
   });
+
+// ─────────────────────────────────────────────
+// GROMO Execution Request
+// ─────────────────────────────────────────────
+let gromoDateRows = [{ from: '', to: '' }];
+
+function gromoInit() {
+  // Load saved PAT
+  const savedPat = localStorage.getItem('asana_pat') || '';
+  if (savedPat) {
+    document.getElementById('g-pat').value = savedPat;
+    document.getElementById('g-pat-status').textContent = '✓ Token loaded from browser storage';
+    document.getElementById('g-pat-status').className = 'pat-status pat-ok';
+  }
+  // Pre-fill lever from recommended
+  if (recommendedId && recommendedId !== 'no_action') {
+    const leverMap = { email_reactivation: 'email_reactivation', mailer_deferment: 'mailer_deferment', throttle_pause: 'throttle_pause' };
+    const el = document.getElementById('g-lever');
+    if (el && leverMap[recommendedId]) el.value = leverMap[recommendedId];
+  }
+  // Pre-fill requester from playbook owner
+  const ownerEl = document.querySelector('#builder-form input');
+  if (ownerEl && ownerEl.value) document.getElementById('g-requester').value = ownerEl.value;
+  gromoRenderDateRows();
+  gromoRebuildPreview();
+  // Live preview on any input change
+  document.getElementById('gromo-section').querySelectorAll('input,select,textarea').forEach(el => {
+    el.addEventListener('input', gromoRebuildPreview);
+    el.addEventListener('change', gromoRebuildPreview);
+  });
+}
+
+function gromoSavePat() {
+  const val = document.getElementById('g-pat').value.trim();
+  if (!val) {
+    document.getElementById('g-pat-status').textContent = 'Enter a token first';
+    document.getElementById('g-pat-status').className = 'pat-status pat-err';
+    return;
+  }
+  localStorage.setItem('asana_pat', val);
+  document.getElementById('g-pat-status').textContent = '✓ Saved to browser storage';
+  document.getElementById('g-pat-status').className = 'pat-status pat-ok';
+}
+
+function gromoAddDateRow() {
+  gromoDateRows.push({ from: '', to: '' });
+  gromoRenderDateRows();
+}
+
+function gromoRemoveDateRow(i) {
+  if (gromoDateRows.length <= 1) return;
+  gromoDateRows.splice(i, 1);
+  gromoRenderDateRows();
+}
+
+function gromoRenderDateRows() {
+  const container = document.getElementById('g-date-rows');
+  container.innerHTML = gromoDateRows.map((row, i) => `
+    <div class="date-row">
+      <input type="text" value="${row.from}" placeholder="e.g. Apr 6, 2026"
+        oninput="gromoDateRows[${i}].from=this.value;gromoRebuildPreview()">
+      <span class="arrow">→</span>
+      <input type="text" value="${row.to}" placeholder="e.g. May 11, 2026"
+        oninput="gromoDateRows[${i}].to=this.value;gromoRebuildPreview()">
+      <button class="remove-btn" onclick="gromoRemoveDateRow(${i})">✕</button>
+    </div>`).join('');
+}
+
+function gromoGetValues() {
+  const leverLabels = { email_reactivation: 'Email Reactivation', mailer_deferment: 'Direct Mail Flat Deferment', throttle_pause: 'Throttle Pause / Unthrottling' };
+  const lever    = document.getElementById('g-lever').value;
+  const pct      = document.getElementById('g-pct').value;
+  const requester= document.getElementById('g-requester').value.trim();
+  const sfdc     = document.getElementById('g-sfdc').value.trim();
+  const sheet    = document.getElementById('g-sheet').value.trim();
+  const sender   = document.getElementById('g-sender').value.trim() || 'Hinge Health';
+  const exclusions = document.getElementById('g-exclusions').value.trim();
+  const notes    = document.getElementById('g-notes').value.trim();
+  const quarter  = currentData ? currentData.quarter : 'Current Quarter';
+
+  const reactivAll  = document.getElementById('g-reactiv-all').checked;
+  const reactivEmail= document.getElementById('g-reactiv-email').checked;
+  const statusApproved = document.getElementById('g-status-approved').checked;
+  const statusHigh  = document.getElementById('g-status-high').checked;
+  const tier1 = document.getElementById('g-tier1').checked;
+  const tier2 = document.getElementById('g-tier2').checked;
+  const tier3 = document.getElementById('g-tier3').checked;
+
+  const reactivList = [reactivAll && 'Yes – All Channels', reactivEmail && 'Yes – Email Only'].filter(Boolean).join(', ') || '(none selected)';
+  const statusList  = [statusApproved && 'Approved', statusHigh && 'Awaiting Approval – High Likelihood'].filter(Boolean).join(', ') || '(none selected)';
+  const tierList    = [tier1 && 'Tier 1', tier2 && 'Tier 2', tier3 && 'Tier 3'].filter(Boolean).join(', ') || '(none selected)';
+
+  const dateLines = gromoDateRows.filter(r => r.from || r.to).map(r => `  • ${r.from || '(date)'} → ${r.to || '(date)'}`).join('\n');
+  const fromDates = gromoDateRows.filter(r => r.from).map(r => r.from).join(', ');
+  const toDates   = gromoDateRows.filter(r => r.to).map(r => r.to).join(', ');
+
+  const pctLabel  = pct ? pct + '%' : '[%]';
+  const leverName = leverLabels[lever] || lever;
+  const taskName  = `[${leverName}] GROMO Execution Request — ${quarter}${fromDates ? ' | ' + fromDates : ''}`;
+
+  const requestSummary = lever === 'email_reactivation'
+    ? `Please move ${pctLabel} of all eligible marketing scheduled the weeks of ${fromDates || '[original dates]'} and reactivate them during the weeks of ${toDates || '[new dates]'}.`
+    : lever === 'mailer_deferment'
+    ? `Please defer ${pctLabel} of non-custom (Sender = Hinge Health) direct mail slated to land in homes the weeks of ${fromDates || '[original dates]'} to the weeks of ${toDates || '[new dates]'}.`
+    : `Please unthrottle scheduled send volume for the weeks of ${fromDates || '[original dates]'}, moving send windows to ${toDates || '[new dates]'}.`;
+
+  return { lever, leverName, pct, pctLabel, requester, sfdc, sheet, sender, exclusions, notes,
+           quarter, reactivList, statusList, tierList, dateLines, taskName, requestSummary };
+}
+
+function gromoRebuildPreview() {
+  const v = gromoGetValues();
+  const lines = [
+    `📋 GROMO Execution Request`,
+    `Lever: ${v.leverName}`,
+    `Requested by: ${v.requester || '(enter name)'}`,
+    `Quarter: ${v.quarter}`,
+    ``,
+    `── REQUEST ──`,
+    v.requestSummary,
+    ``,
+    `── DATE CHANGES ──`,
+    v.dateLines || '  (add dates above)',
+    ``,
+    `── SFDC BULK UPLOAD LINK ──`,
+    v.sfdc || '(required — enter Salesforce URL)',
+    ``,
+    `── IMPACTED TOUCHPOINTS SPREADSHEET ──`,
+    v.sheet || '(enter Google Sheet URL)',
+    ``,
+    `── QUALIFYING CRITERIA ──`,
+    `  Allows Marketing Reactivation: ${v.reactivList}`,
+    `  Marketing Activity Status:     ${v.statusList}`,
+    `  Client Tiers:                  ${v.tierList}`,
+    `  Sender:                        ${v.sender}`,
+    ``,
+    v.exclusions ? `── EXCLUSIONS ──\n${v.exclusions}\n` : '',
+    v.notes      ? `── ADDITIONAL NOTES ──\n${v.notes}\n` : '',
+  ].filter(l => l !== undefined).join('\n');
+  document.getElementById('g-preview').textContent = lines;
+}
+
+async function gromoSubmit() {
+  const v     = gromoGetValues();
+  const pat   = (localStorage.getItem('asana_pat') || document.getElementById('g-pat').value).trim();
+  const projId= document.getElementById('g-project').value.trim();
+  const btn   = document.getElementById('g-submit-btn');
+  const status= document.getElementById('g-status');
+
+  if (!pat)    { status.className='gromo-status err'; status.textContent='⚠ Add your Asana PAT first'; return; }
+  if (!projId) { status.className='gromo-status err'; status.textContent='⚠ Asana project ID is missing'; return; }
+  if (!v.sfdc) { status.className='gromo-status err'; status.textContent='⚠ SFDC link is required'; return; }
+  if (!v.requester) { status.className='gromo-status err'; status.textContent='⚠ Enter who is requesting'; return; }
+
+  btn.disabled = true;
+  btn.querySelector('span').textContent = 'Creating…';
+  status.textContent = '';
+
+  const htmlNotes = `<body>
+<h2>GROMO Execution Request — ${v.leverName}</h2>
+<hr/>
+<ul>
+<li><b>Lever:</b> ${v.leverName}</li>
+<li><b>Requested by:</b> ${v.requester}</li>
+<li><b>Quarter:</b> ${v.quarter}</li>
+</ul>
+
+<h3>Request</h3>
+<p>${v.requestSummary}</p>
+
+<h3>Date Changes (Original → New In-Home)</h3>
+<ul>
+${gromoDateRows.filter(r=>r.from||r.to).map(r=>`<li>${r.from||'?'} → ${r.to||'?'}</li>`).join('\n')}
+</ul>
+
+<h3>SFDC Bulk Upload Link</h3>
+<p><a href="${v.sfdc}">${v.sfdc}</a></p>
+
+${v.sheet ? `<h3>Impacted Touchpoints Spreadsheet</h3>\n<p><a href="${v.sheet}">${v.sheet}</a></p>` : ''}
+
+<h3>Qualifying Client Criteria</h3>
+<ul>
+<li><b>Allows Marketing Reactivation:</b> ${v.reactivList}</li>
+<li><b>Marketing Activity Status:</b> ${v.statusList}</li>
+<li><b>Client Tiers:</b> ${v.tierList}</li>
+<li><b>Sender:</b> ${v.sender}</li>
+</ul>
+
+${v.exclusions ? `<h3>Exclusions / Suppression</h3><p>${v.exclusions.replace(/\n/g,'<br/>')}</p>` : ''}
+${v.notes      ? `<h3>Additional Notes</h3><p>${v.notes.replace(/\n/g,'<br/>')}</p>` : ''}
+</body>`;
+
+  try {
+    const res = await fetch('https://app.asana.com/api/1.0/tasks', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${pat}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        data: {
+          name: v.taskName,
+          html_notes: htmlNotes,
+          projects: [projId],
+        }
+      })
+    });
+
+    const json = await res.json();
+
+    if (!res.ok) {
+      const msg = json.errors?.[0]?.message || res.statusText;
+      throw new Error(msg);
+    }
+
+    const taskId  = json.data.gid;
+    const taskUrl = `https://app.asana.com/0/${projId}/${taskId}`;
+    status.className = 'gromo-status ok';
+    status.innerHTML = `✓ Task created — <a class="gromo-task-link" href="${taskUrl}" target="_blank">Open in Asana</a>`;
+    btn.querySelector('span').textContent = '✓ Created!';
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.querySelector('span').textContent = 'Create Asana Task';
+    }, 4000);
+
+  } catch(err) {
+    status.className = 'gromo-status err';
+    status.textContent = `⚠ ${err.message}`;
+    btn.disabled = false;
+    btn.querySelector('span').textContent = 'Create Asana Task';
+  }
+}
 </script>
 </body>
 </html>
