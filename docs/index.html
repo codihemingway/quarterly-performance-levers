@@ -11,13 +11,13 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --hh-green:      #007B34;  /* Evergreen — primary brand color */
-      --hh-green-dark: #00491F;  /* Forest Green */
-      --hh-green-mid:  #00A749;  /* Lime */
-      --hh-green-pale: #BFE9D1;  /* Lime 30% */
-      --hh-mint:       #22D081;  /* Mint */
-      --hh-cream:      #FFFBED;  /* Oat */
-      --hh-grey:       #373938;  /* Brand Grey */
+      --hh-green:      #007B34;
+      --hh-green-dark: #00491F;
+      --hh-green-mid:  #00A749;
+      --hh-green-pale: #BFE9D1;
+      --hh-mint:       #22D081;
+      --hh-cream:      #FFFBED;
+      --hh-grey:       #373938;
       --hh-white:      #ffffff;
       --text-primary:  #373938;
       --text-secondary:#5a6472;
@@ -44,69 +44,29 @@
       height: 64px;
       border-bottom: 3px solid var(--hh-green);
     }
-    .header-logo {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-      flex-shrink: 0;
-    }
-    .header-logo img {
-      height: 32px;
-      width: auto;
-      filter: brightness(0) invert(1);
-    }
-    .header-divider {
-      width: 1px;
-      height: 24px;
-      background: rgba(255,255,255,.25);
-      margin: 0 20px;
-    }
-    .header-title {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: rgba(255,255,255,.85);
-      flex: 1;
-    }
-    .header-meta {
-      font-size: 0.78rem;
-      color: rgba(255,255,255,.5);
-    }
+    .header-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+    .header-logo img { height: 32px; width: auto; filter: brightness(0) invert(1); }
+    .header-divider { width: 1px; height: 24px; background: rgba(255,255,255,.25); margin: 0 20px; }
+    .header-title { font-size: 0.9rem; font-weight: 500; color: rgba(255,255,255,.85); flex: 1; }
+    .header-meta { font-size: 0.78rem; color: rgba(255,255,255,.5); }
 
     /* ── Layout ── */
-    main { max-width: 1160px; margin: 0 auto; padding: 28px 20px 60px; }
+    main { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
     section { margin-bottom: 24px; }
     .section-label {
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--hh-green);
-      margin-bottom: 10px;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--hh-green); margin-bottom: 10px;
     }
 
     /* ── Cards ── */
-    .card {
-      background: var(--hh-white);
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      padding: 20px 24px;
-    }
+    .card { background: var(--hh-white); border-radius: 14px; box-shadow: var(--shadow); padding: 20px 24px; }
 
     /* ── Metric Cards ── */
     .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
     .metric-card .label { font-size: 0.78rem; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; }
     .metric-card .value { font-size: 1.85rem; font-weight: 700; letter-spacing: -0.03em; color: var(--text-primary); }
     .metric-card .sub { margin-top: 8px; font-size: 0.75rem; color: var(--text-secondary); }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      margin-top: 8px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 999px;
-    }
+    .badge { display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
     .badge-green  { background: var(--hh-green-pale); color: var(--hh-green-dark); }
     .badge-red    { background: #fde8e8; color: #9b1c1c; }
     .badge-yellow { background: #fef3c7; color: #92400e; }
@@ -115,25 +75,9 @@
 
     /* ── Tables ── */
     .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .table-card h3 {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
-    }
+    .table-card h3 { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
     table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-    th {
-      text-align: left;
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-    }
+    th { text-align: left; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding-bottom: 8px; border-bottom: 1px solid var(--border); }
     td { padding: 9px 0; border-bottom: 1px solid #f4f6f4; }
     tr:last-child td { border-bottom: none; }
     .num { text-align: right; font-variant-numeric: tabular-nums; }
@@ -142,136 +86,86 @@
     /* ── Lever Section ── */
     .lever-section { display: grid; grid-template-columns: 310px 1fr; gap: 14px; align-items: start; }
     .lever-list { display: flex; flex-direction: column; gap: 10px; }
-
-    .lever-card {
-      background: var(--hh-white);
-      border-radius: 14px;
-      border: 2px solid transparent;
-      box-shadow: var(--shadow);
-      padding: 14px 16px;
-      cursor: pointer;
-      transition: border-color .15s, box-shadow .15s, transform .1s;
-    }
-    .lever-card:hover {
-      border-color: var(--hh-green-pale);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
-    }
-    .lever-card.active {
-      border-color: var(--hh-green);
-      box-shadow: 0 0 0 3px rgba(0,123,52,.12), var(--shadow);
-    }
+    .lever-card { background: var(--hh-white); border-radius: 14px; border: 2px solid transparent; box-shadow: var(--shadow); padding: 14px 16px; cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .1s; }
+    .lever-card:hover { border-color: var(--hh-green-pale); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .lever-card.active { border-color: var(--hh-green); box-shadow: 0 0 0 3px rgba(0,123,52,.12), var(--shadow); }
     .lever-card .lever-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 2px; color: var(--text-primary); }
     .lever-card .lever-subtitle { font-size: 0.76rem; color: var(--text-secondary); margin-bottom: 9px; }
     .lever-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip {
-      font-size: 0.65rem;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 999px;
-      letter-spacing: 0.02em;
-    }
+    .chip { font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.02em; }
     .chip-rec     { background: var(--hh-green-pale); color: var(--hh-green-dark); }
     .chip-neutral { background: #f0f4f1; color: #4a5568; }
     .chip-urgent  { background: #fef3c7; color: #92400e; }
 
-    /* ── Playbook Panel ── */
-    .playbook-panel {
-      background: var(--hh-white);
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      padding: 26px 30px;
-      min-height: 360px;
-    }
-    .pb-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 22px;
-      padding-bottom: 18px;
-      border-bottom: 2px solid var(--hh-green-pale);
-    }
-    .pb-name {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--text-primary);
-      letter-spacing: -0.02em;
-      line-height: 1.3;
-    }
-    .pb-section {
-      margin-bottom: 20px;
-    }
-    .pb-section-title {
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--hh-green);
-      margin-bottom: 6px;
-    }
-    .pb-body {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      line-height: 1.65;
-    }
-    .pb-action-box {
-      background: #f0f9f4;
-      border-left: 3px solid var(--hh-green);
-      border-radius: 0 8px 8px 0;
-      padding: 10px 14px;
-      font-size: 0.875rem;
-      color: var(--hh-green-dark);
-      font-weight: 500;
-    }
+    /* ── Overview Panel ── */
+    .playbook-panel { background: var(--hh-white); border-radius: 14px; box-shadow: var(--shadow); padding: 26px 30px; min-height: 360px; }
+    .pb-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 22px; padding-bottom: 18px; border-bottom: 2px solid var(--hh-green-pale); }
+    .pb-name { font-size: 1.1rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.3; }
+    .pb-section { margin-bottom: 20px; }
+    .pb-section-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--hh-green); margin-bottom: 6px; }
+    .pb-body { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.65; }
+    .pb-action-box { background: #f0f9f4; border-left: 3px solid var(--hh-green); border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 0.875rem; color: var(--hh-green-dark); font-weight: 500; }
     .pb-steps { list-style: none; counter-reset: steps; }
-    .pb-steps li {
-      counter-increment: steps;
-      display: flex;
-      gap: 12px;
-      margin-bottom: 9px;
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      line-height: 1.5;
+    .pb-steps li { counter-increment: steps; display: flex; gap: 12px; margin-bottom: 9px; font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5; }
+    .pb-steps li::before { content: counter(steps); min-width: 22px; height: 22px; background: var(--hh-green-pale); color: var(--hh-green-dark); font-weight: 800; font-size: 0.7rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Playbook Builder ── */
+    .builder-grid { display: grid; grid-template-columns: 360px 1fr; gap: 16px; align-items: start; }
+    .builder-form { display: flex; flex-direction: column; gap: 12px; }
+    .form-card { background: var(--hh-white); border-radius: 14px; box-shadow: var(--shadow); padding: 16px 20px; }
+    .form-card-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--hh-green); margin-bottom: 12px; }
+    .form-group { margin-bottom: 10px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-group label { display: block; font-size: 0.71rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px;
+      font-size: 0.82rem; font-family: inherit; color: var(--text-primary); background: white;
+      outline: none; transition: border-color .15s, box-shadow .15s; resize: vertical;
     }
-    .pb-steps li::before {
-      content: counter(steps);
-      min-width: 22px;
-      height: 22px;
-      background: var(--hh-green-pale);
-      color: var(--hh-green-dark);
-      font-weight: 800;
-      font-size: 0.7rem;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--hh-green); box-shadow: 0 0 0 2px rgba(0,123,52,.1); }
+    .toggle-group { display: flex; gap: 6px; }
+    .toggle-btn { flex: 1; padding: 6px 0; border: 1.5px solid var(--border); border-radius: 8px; background: white; font-size: 0.78rem; font-weight: 600; font-family: inherit; cursor: pointer; color: var(--text-muted); transition: all .15s; }
+    .toggle-btn.t-yes { border-color: var(--hh-green); background: var(--hh-green-pale); color: var(--hh-green-dark); }
+    .toggle-btn.t-no  { border-color: #e5e7eb; background: #f3f4f6; color: var(--text-secondary); }
+
+    /* ── Preview panel ── */
+    .builder-preview { background: var(--hh-white); border-radius: 14px; box-shadow: var(--shadow); padding: 24px 28px; position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow-y: auto; }
+    .preview-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 2px solid var(--hh-green-pale); }
+    .preview-title { font-size: 0.78rem; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.06em; }
+    .copy-btn { display: inline-flex; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: 600; padding: 6px 14px; border: 1.5px solid var(--hh-green); border-radius: 999px; color: var(--hh-green); background: white; cursor: pointer; font-family: inherit; transition: background .15s, color .15s; }
+    .copy-btn:hover, .copy-btn.copied { background: var(--hh-green); color: white; }
+
+    /* Doc sections */
+    .doc-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 18px; }
+    .doc-section { margin-bottom: 20px; }
+    .doc-section-title { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--hh-green); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--hh-green-pale); }
+    .doc-body { font-size: 0.83rem; color: var(--text-secondary); line-height: 1.75; }
+    .doc-body strong { color: var(--text-primary); font-weight: 600; }
+    .doc-body a { color: var(--hh-green); }
+    .doc-pill { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; margin-left: 4px; vertical-align: middle; }
+    .doc-pill-yes { background: var(--hh-green-pale); color: var(--hh-green-dark); }
+    .doc-pill-no  { background: #f3f4f6; color: var(--text-secondary); }
+    .doc-slack-box { background: #f4f6f8; border-left: 3px solid #4A154B; border-radius: 0 8px 8px 0; padding: 12px 14px; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.7; white-space: pre-wrap; margin-top: 6px; }
+    .doc-placeholder { color: #ccc; font-style: italic; }
 
     /* ── Footer ── */
-    footer {
-      text-align: center;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      padding: 20px;
-    }
+    footer { text-align: center; font-size: 0.78rem; color: var(--text-muted); padding: 20px; }
     footer a { color: var(--hh-green); text-decoration: none; font-weight: 500; }
     footer a:hover { text-decoration: underline; }
 
     /* ── Loading ── */
-    #loading {
-      text-align: center;
-      padding: 80px;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
+    #loading { text-align: center; padding: 80px; color: var(--text-muted); font-size: 0.95rem; }
 
-    @media (max-width: 768px) {
-      .metric-grid  { grid-template-columns: 1fr; }
-      .tables-grid  { grid-template-columns: 1fr; }
-      .lever-section{ grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
+      .metric-grid   { grid-template-columns: 1fr; }
+      .tables-grid   { grid-template-columns: 1fr; }
+      .lever-section { grid-template-columns: 1fr; }
+      .builder-grid  { grid-template-columns: 1fr; }
+      .builder-preview { position: static; max-height: none; }
       header { padding: 0 16px; }
       .header-title { display: none; }
     }
@@ -341,13 +235,28 @@
       </div>
     </section>
 
-    <!-- ── Lever Selector + Playbook ── -->
+    <!-- ── Lever Selector + Overview ── -->
     <section>
       <div class="section-label">Choose a Lever</div>
       <div class="lever-section">
         <div class="lever-list" id="lever-list"></div>
         <div class="playbook-panel" id="playbook-panel">
           <div id="playbook-content"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Playbook Builder ── -->
+    <section>
+      <div class="section-label">Playbook Builder</div>
+      <div class="builder-grid">
+        <div class="builder-form" id="builder-form"></div>
+        <div class="builder-preview">
+          <div class="preview-header">
+            <div class="preview-title">Generated CS/EM Playbook</div>
+            <button class="copy-btn" id="copy-btn" onclick="copyFullPlaybook()">📋 Copy</button>
+          </div>
+          <div id="preview-doc"></div>
         </div>
       </div>
     </section>
@@ -361,22 +270,118 @@
 const fmt     = n => Number(n).toLocaleString('en-US');
 const fmtSign = n => (n >= 0 ? '+' : '') + fmt(n);
 
-let allLevers = [];
+let allLevers     = [];
 let recommendedId = '';
+let activeLeverId = '';
+let currentData   = null;
+const formValues  = {};
 
+// ─────────────────────────────────────────────
+// Form field definitions
+// ─────────────────────────────────────────────
+const FORM_DEFS = [
+  { section: 'Header', fields: [
+    { id: 'owner',    label: 'Owner (Acquisition Lead)', type: 'text', placeholder: 'e.g. Gabby Greenberg' },
+    { id: 'reviewer', label: 'Reviewed By', type: 'text', placeholder: 'e.g. Samantha Rosesmith', dflt: 'Samantha Rosesmith' },
+  ]},
+  { section: 'Action Items', fields: [
+    { id: 'action_req',    label: 'Action required from EM/CS?', type: 'toggle', dflt: 'No' },
+    { id: 'client_notif',  label: 'Client notification required?', type: 'toggle', dflt: 'No' },
+    { id: 'sfdc_req',      label: 'SFDC adjustments required?', type: 'toggle', dflt: 'No' },
+  ]},
+  { section: 'What Is Happening', fields: [
+    { id: 'orig_dates',   label: 'Original Send Date(s)', type: 'text', placeholder: 'e.g. week of 4/21 – 4/28' },
+    { id: 'defer_dates',  label: 'Deferred To Date(s)', type: 'text', placeholder: 'e.g. week of 7/7 – 7/14' },
+    { id: 'impl_team',    label: 'Who Is Implementing', type: 'text', placeholder: 'GROMO / Acquisition', dflt: 'GROMO / Acquisition' },
+  ]},
+  { section: 'Impacted Touchpoints', fields: [
+    { id: 'tp_link',       label: 'Touchpoint List Link', type: 'url', placeholder: 'Google Sheet URL' },
+    { id: 'tmpl_types',    label: 'Content Template Types', type: 'text', placeholder: 'e.g. Dep: DM1 Baseline, Dep: DM2 Baseline' },
+  ]},
+  { section: 'Execution', fields: [
+    { id: 'confidence',    label: 'Confidence Level', type: 'select', options: ['High','Medium','Low'], dflt: 'High' },
+    { id: 'limitations',   label: 'Known Limitations', type: 'textarea', placeholder: 'e.g. Changes to SFDC data inputs between original and deferred send date will not be reflected' },
+    { id: 'align_teams',   label: 'Alignment Teams', type: 'text', dflt: 'GROMO, Acquisition Marketing, Enrollment Marketing, Client Success, Data Science, Forecasting, Growth Leadership' },
+    { id: 'opt_out',       label: 'Opt-out / exceptions offered?', type: 'toggle', dflt: 'No' },
+  ]},
+  { section: 'Contacts', fields: [
+    { id: 'contact_primary',  label: 'Primary Contact', type: 'text', placeholder: 'Name + Slack channel' },
+    { id: 'contact_escalation', label: 'Escalation', type: 'text', placeholder: 'e.g. Samantha Rosesmith', dflt: 'Samantha Rosesmith for client-risk concerns' },
+    { id: 'contact_gromo',    label: 'GROMO / Execution', type: 'text', placeholder: 'Name', dflt: 'Codi Hemingway' },
+  ]},
+];
+
+function gv(id)      { return formValues[id] !== undefined ? formValues[id] : ''; }
+function sv(id, val) { formValues[id] = val; rebuildPreview(); }
+
+function initDefaults() {
+  FORM_DEFS.forEach(s => s.fields.forEach(f => {
+    if (f.dflt !== undefined && formValues[f.id] === undefined) formValues[f.id] = f.dflt;
+  }));
+}
+
+// ─────────────────────────────────────────────
+// Build input form
+// ─────────────────────────────────────────────
+function buildForm() {
+  const container = document.getElementById('builder-form');
+  if (!container) return;
+  container.innerHTML = FORM_DEFS.map(s => `
+    <div class="form-card">
+      <div class="form-card-title">${s.section}</div>
+      ${s.fields.map(renderField).join('')}
+    </div>`).join('');
+}
+
+function renderField(f) {
+  const val = gv(f.id);
+  if (f.type === 'toggle') {
+    const isYes = val === 'Yes';
+    return `<div class="form-group">
+      <label>${f.label}</label>
+      <div class="toggle-group" id="tg-${f.id}">
+        <button class="toggle-btn ${isYes ? 't-yes' : ''}" onclick="setToggle('${f.id}','Yes')">Yes</button>
+        <button class="toggle-btn ${!isYes ? 't-no' : ''}" onclick="setToggle('${f.id}','No')">No</button>
+      </div></div>`;
+  }
+  if (f.type === 'select') {
+    const opts = (f.options||[]).map(o => `<option ${val===o?'selected':''}>${o}</option>`).join('');
+    return `<div class="form-group"><label>${f.label}</label><select onchange="sv('${f.id}',this.value)">${opts}</select></div>`;
+  }
+  if (f.type === 'textarea') {
+    return `<div class="form-group"><label>${f.label}</label><textarea rows="2" placeholder="${f.placeholder||''}" oninput="sv('${f.id}',this.value)">${val}</textarea></div>`;
+  }
+  return `<div class="form-group"><label>${f.label}</label><input type="${f.type||'text'}" value="${val.replace(/"/g,'&quot;')}" placeholder="${f.placeholder||''}" oninput="sv('${f.id}',this.value)"></div>`;
+}
+
+function setToggle(id, val) {
+  formValues[id] = val;
+  const grp = document.getElementById('tg-' + id);
+  if (!grp) return;
+  grp.querySelectorAll('.toggle-btn').forEach(b => {
+    b.className = 'toggle-btn';
+    if (b.textContent === 'Yes') b.classList.add(val === 'Yes' ? 't-yes' : '');
+    if (b.textContent === 'No')  b.classList.add(val === 'No'  ? 't-no'  : '');
+  });
+  rebuildPreview();
+}
+
+// ─────────────────────────────────────────────
+// Lever selector
+// ─────────────────────────────────────────────
 function selectLever(id) {
+  activeLeverId = id;
   allLevers.forEach(l => {
     const card = document.getElementById('lever-' + l.id);
     if (card) card.classList.toggle('active', l.id === id);
   });
   const lever = allLevers.find(l => l.id === id);
   if (!lever) return;
-  const isRec = id === recommendedId;
-  document.getElementById('playbook-content').innerHTML = renderPlaybook(lever, isRec);
+  document.getElementById('playbook-content').innerHTML = renderOverview(lever, id === recommendedId);
+  rebuildPreview();
 }
 
-function renderPlaybook(lever, isRec) {
-  const stepsHtml = lever.execution_steps.map(s => `<li>${s}</li>`).join('');
+function renderOverview(lever, isRec) {
   return `
     <div class="pb-header">
       <div class="pb-name">${lever.name}</div>
@@ -396,19 +401,376 @@ function renderPlaybook(lever, isRec) {
     </div>
     <div class="pb-section">
       <div class="pb-section-title">Execution Plan</div>
-      <ol class="pb-steps">${stepsHtml}</ol>
-    </div>
-  `;
+      <ol class="pb-steps">${lever.execution_steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+    </div>`;
 }
 
+// ─────────────────────────────────────────────
+// Playbook preview generation
+// ─────────────────────────────────────────────
+function leverTypeLabel(id) {
+  return { no_action:'No Action', email_reactivation:'Email Reactivation',
+           mailer_deferment:'Mailer Flat Deferment', throttle_pause:'Unthrottling' }[id] || id;
+}
+function channelLabel(id) {
+  return { email_reactivation:'Email', mailer_deferment:'Direct Mail',
+           throttle_pause:'Email / Direct Mail', no_action:'All Channels' }[id] || 'All Channels';
+}
+function pill(val) {
+  return `<span class="doc-pill ${val==='Yes'?'doc-pill-yes':'doc-pill-no'}">${val}</span>`;
+}
+function ph(val, label) {
+  return val ? val : `<span class="doc-placeholder">[${label}]</span>`;
+}
+
+function volumeText(leverId, tp) {
+  if (leverId === 'email_reactivation') return `~${fmt(tp.email.shifted)} email enrollments shifting Q2 → Q3`;
+  if (leverId === 'mailer_deferment')   return `~${fmt(tp.dm.touchpoints)} DM touchpoints; ~${fmt(tp.dm.shifted)} enrollments shifting Q2 → Q3`;
+  if (leverId === 'throttle_pause')     return 'Qualifying send volume for next available window';
+  return 'No volume changes — monitoring only';
+}
+
+function rebuildPreview() {
+  if (!currentData || !activeLeverId) return;
+  const lever = allLevers.find(l => l.id === activeLeverId);
+  if (!lever) return;
+  const d  = currentData;
+  const tp = d.touchpoints;
+
+  const owner     = gv('owner');
+  const reviewer  = gv('reviewer');
+  const actionReq = gv('action_req') || 'No';
+  const clientNotif = gv('client_notif') || 'No';
+  const sfdcReq   = gv('sfdc_req') || 'No';
+  const origDates = gv('orig_dates');
+  const deferDates= gv('defer_dates');
+  const implTeam  = gv('impl_team') || 'GROMO / Acquisition';
+  const tpLink    = gv('tp_link');
+  const tmplTypes = gv('tmpl_types');
+  const confidence= gv('confidence') || 'High';
+  const limitations = gv('limitations');
+  const alignTeams= gv('align_teams');
+  const optOut    = gv('opt_out') || 'No';
+  const primaryCtx= gv('contact_primary');
+  const escalation= gv('contact_escalation');
+  const gromoCtx  = gv('contact_gromo');
+
+  const leverType = leverTypeLabel(activeLeverId);
+  const channel   = channelLabel(activeLeverId);
+  const volText   = volumeText(activeLeverId, tp);
+
+  const actionWord = actionReq === 'Yes' ? 'Action Required' : 'FYI';
+  const slackMsg = `[${actionWord}]: ${lever.name} — ${d.quarter} Week ${d.week}
+
+Hi @enrollmentmarketers @client_success — ${lever.rationale}
+
+${lever.action}
+
+Please take a look at the playbook for full details.
+
+Key Details:
+• Lever: ${leverType}
+• Channel: ${channel}
+• Timing: ${origDates||'[original dates]'} → ${deferDates||'[deferred dates]'}
+• Volume: ${volText}
+
+What You Need to Know:
+✅ EM/CS action required: ${actionReq}
+✅ Client notification: ${clientNotif}
+✅ SFDC adjustments: ${sfdcReq}
+
+cc @${reviewer||'Samantha Rosesmith'} @[Leadership tags]`;
+
+  const html = `
+    <div class="doc-meta">${d.quarter} · Week ${d.week} · ${d.generated_at}</div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Header</div>
+      <div class="doc-body">
+        <strong>Owner:</strong> ${ph(owner,'Acquisition Lead')}<br>
+        <strong>Last Updated:</strong> ${d.generated_at}<br>
+        <strong>Reviewed by:</strong> ${ph(reviewer,'Reviewer')}
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Action Items for EM &amp; CS Teams</div>
+      <div class="doc-body">
+        <strong>Action required from EM/CS?</strong> ${pill(actionReq)}<br>
+        ${actionReq === 'No'
+          ? 'No action is needed from CS and EM.'
+          : lever.execution_steps.slice(0,2).map((s,i)=>`${i+1}. ${s}`).join('<br>')
+        }<br><br>
+        <strong>Client notification required?</strong> ${pill(clientNotif)}<br>
+        ${clientNotif === 'No'
+          ? 'We do not plan to notify clients proactively of these updates.'
+          : 'Client-facing messaging to be provided — link TBD.'
+        }<br><br>
+        <strong>SFDC adjustments required?</strong> ${pill(sfdcReq)}<br>
+        ${sfdcReq === 'No'
+          ? 'No SFDC adjustments required.'
+          : 'EM to update relevant SFDC fields — see Execution Details.'
+        }
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">What Is Happening</div>
+      <div class="doc-body">
+        <strong>Lever type:</strong> ${leverType}<br>
+        <strong>Timing:</strong> ${ph(origDates,'original dates')} → ${ph(deferDates,'deferred dates')}<br>
+        <strong>Volume impacted:</strong> ${volText}<br>
+        <strong>Channel:</strong> ${channel}<br>
+        <strong>Who is implementing:</strong> ${implTeam}
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Why <span style="font-weight:400;font-size:0.7rem;color:var(--text-muted);text-transform:none;letter-spacing:0">(internal only — do not share externally)</span></div>
+      <div class="doc-body">
+        <strong>Business context:</strong> ${lever.rationale}<br><br>
+        <strong>Strategic rationale:</strong> ${lever.estimated_impact}<br><br>
+        <strong>Alignment:</strong> ${ph(alignTeams,'teams aligned on the plan')}
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Qualifying Criteria</div>
+      <div class="doc-body">
+        <strong>Allows Marketing Reactivation:</strong> ${activeLeverId==='email_reactivation' ? 'Yes – all channels / Yes – email only' : activeLeverId==='mailer_deferment' ? 'Yes – all channels / Yes – mailer only' : 'N/A'}<br>
+        <strong>Marketing Activity Status:</strong> Approved / Awaiting Approval – High Likelihood<br>
+        <strong>Sender:</strong> Hinge Health only<br>
+        <strong>Tier restrictions:</strong> Tiers 1–3<br>
+        <strong>Exclusions:</strong> Custom / PFL offline / Cornerstone mailers; active longitudinal experiments; new or high-relationship-risk Tier 1 clients<br>
+        <strong>Volume limit:</strong> ${lever.subtitle}
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Impacted Touchpoints</div>
+      <div class="doc-body">
+        <strong>Touchpoint list:</strong> ${tpLink ? `<a href="${tpLink}" target="_blank">${tpLink}</a>` : '<span class="doc-placeholder">[Google Sheet link]</span>'}<br>
+        <strong>Content template types:</strong> ${ph(tmplTypes,'list template types')}<br>
+        <strong>Original send dates:</strong> ${ph(origDates,'date range')}<br>
+        <strong>Deferred to:</strong> ${ph(deferDates,'date range')}
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Execution Details</div>
+      <div class="doc-body">
+        <strong>System changes:</strong> GROMO backend change in Iterable / GROMO bulk update of SFDC scheduled touchpoint dates<br>
+        <strong>SFDC impact:</strong> ${sfdcReq==='Yes' ? 'Adjustments required — see Action Items' : 'No adjustments required'}<br>
+        <strong>Confidence level:</strong> ${confidence}<br>
+        <strong>Known limitations:</strong> ${limitations || 'Changes to SFDC data inputs between original and deferred send date will not be reflected.'}
+      </div>
+    </div>
+
+    ${optOut === 'Yes' ? `
+    <div class="doc-section">
+      <div class="doc-section-title">Opt-Out / Exception Process</div>
+      <div class="doc-body">
+        <strong>Who can request:</strong> EM Leads<br>
+        <strong>Approval authority:</strong> ${ph(reviewer,'Reviewer')}, with CS leadership where necessary<br>
+        <strong>How to request:</strong> EM Lead should Slack DM ${ph(reviewer,'reviewer')} with: touchpoint(s) affected, client(s), and reason for opt-out.<br>
+        <strong>Deadline to flag:</strong> <span class="doc-placeholder">[2 business days from announcement]</span>
+      </div>
+    </div>` : ''}
+
+    <div class="doc-section">
+      <div class="doc-section-title">Reactive Talking Points</div>
+      <div class="doc-body">
+        <strong>Q: Why was my client's touchpoint delayed?</strong><br>
+        A: We periodically make minor timing adjustments to our communications to optimize deliverability and performance. The delay applies to touchpoints originally scheduled for ${ph(origDates,'original dates')}.<br><br>
+        <strong>Q: Will this happen again?</strong><br>
+        A: We make these adjustments as needed to manage program performance effectively. We'll communicate any future changes through the same channels.<br><br>
+        <strong>Q: What if my client is highly sensitive to timing?</strong><br>
+        A: ${optOut==='Yes' ? 'Please submit an opt-out request per the exception process above.' : `Please escalate to ${ph(escalation,'escalation contact')}.`}
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Who to Contact</div>
+      <div class="doc-body">
+        <strong>Primary:</strong> ${ph(primaryCtx,'primary contact + channel')}<br>
+        <strong>Escalation:</strong> ${ph(escalation,'escalation contact')}<br>
+        <strong>GROMO/Execution:</strong> ${ph(gromoCtx,'GROMO contact')}
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Slack Announcement Template</div>
+      <div class="doc-slack-box">${slackMsg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Appendix: Process Reference</div>
+      <div class="doc-body" style="font-size:0.78rem">
+        <ol style="padding-left:18px;line-height:2.2">
+          <li>Acquisition drafts playbook + internal comms → shares with ${ph(reviewer,'reviewer')} for review</li>
+          <li>Leadership review in CS/Growth Leadership Slack (24-hour minimum)</li>
+          <li>Announce to EM/CS in #b2c-marketing</li>
+          ${optOut==='Yes' ? '<li>Exception window (2 business days if opt-outs offered)</li>' : ''}
+          <li>Execution by GROMO</li>
+        </ol>
+      </div>
+    </div>`;
+
+  document.getElementById('preview-doc').innerHTML = html;
+}
+
+// ─────────────────────────────────────────────
+// Copy full playbook as plain text
+// ─────────────────────────────────────────────
+function copyFullPlaybook() {
+  if (!currentData || !activeLeverId) return;
+  const lever = allLevers.find(l => l.id === activeLeverId);
+  const d  = currentData;
+  const tp = d.touchpoints;
+
+  const owner     = gv('owner')     || '[Acquisition Lead]';
+  const reviewer  = gv('reviewer')  || '[Reviewer]';
+  const actionReq = gv('action_req')|| 'No';
+  const clientNotif = gv('client_notif') || 'No';
+  const sfdcReq   = gv('sfdc_req')  || 'No';
+  const origDates = gv('orig_dates')  || '[original dates]';
+  const deferDates= gv('defer_dates') || '[deferred dates]';
+  const implTeam  = gv('impl_team') || 'GROMO / Acquisition';
+  const tpLink    = gv('tp_link')   || '[touchpoint list link]';
+  const tmplTypes = gv('tmpl_types')|| '[template types]';
+  const confidence= gv('confidence')|| 'High';
+  const limitations = gv('limitations') || 'Changes to SFDC data inputs between original and deferred send date will not be reflected.';
+  const alignTeams= gv('align_teams')|| '[alignment teams]';
+  const optOut    = gv('opt_out')   || 'No';
+  const primaryCtx= gv('contact_primary')    || '[primary contact]';
+  const escalation= gv('contact_escalation') || '[escalation contact]';
+  const gromoCtx  = gv('contact_gromo')      || '[GROMO contact]';
+
+  const leverType = leverTypeLabel(activeLeverId);
+  const channel   = channelLabel(activeLeverId);
+  const volText   = volumeText(activeLeverId, tp);
+  const hr = '═══════════════════════════════════════════════';
+  const actionWord = actionReq === 'Yes' ? 'Action Required' : 'FYI';
+
+  const slackMsg = `[${actionWord}]: ${lever.name} — ${d.quarter} Week ${d.week}
+
+Hi @enrollmentmarketers @client_success — ${lever.rationale}
+
+${lever.action}
+
+Please take a look at the playbook for full details.
+
+Key Details:
+• Lever: ${leverType}
+• Channel: ${channel}
+• Timing: ${origDates} → ${deferDates}
+• Volume: ${volText}
+
+What You Need to Know:
+✅ EM/CS action required: ${actionReq}
+✅ Client notification: ${clientNotif}
+✅ SFDC adjustments: ${sfdcReq}
+
+cc @${reviewer} @[Leadership tags]`;
+
+  const lines = [
+    `${leverType} CS/EM Playbook — ${d.quarter} Week ${d.week}`,
+    `Owner: ${owner}   |   Last Updated: ${d.generated_at}   |   Reviewed by: ${reviewer}`,
+    '',
+    hr, 'ACTION ITEMS FOR EM & CS TEAMS', hr,
+    `Action required from EM/CS? ${actionReq}`,
+    actionReq === 'No' ? 'No action is needed from CS and EM.' : lever.execution_steps.slice(0,2).map((s,i)=>`  ${i+1}. ${s}`).join('\n'),
+    '',
+    `Client notification required? ${clientNotif}`,
+    clientNotif === 'No' ? 'We do not plan to notify clients proactively of these updates.' : 'Client-facing messaging to be provided.',
+    '',
+    `SFDC adjustments required? ${sfdcReq}`,
+    sfdcReq === 'No' ? 'No SFDC adjustments required.' : 'EM to update relevant SFDC fields — see Execution Details.',
+    '',
+    hr, 'WHAT IS HAPPENING', hr,
+    `Lever type: ${leverType}`,
+    `Timing: ${origDates} → ${deferDates}`,
+    `Volume impacted: ${volText}`,
+    `Channel: ${channel}`,
+    `Who is implementing: ${implTeam}`,
+    '',
+    hr, 'WHY (internal only — do not share externally)', hr,
+    `Business context: ${lever.rationale}`,
+    '',
+    `Strategic rationale: ${lever.estimated_impact}`,
+    '',
+    `Alignment: ${alignTeams}`,
+    '',
+    hr, 'QUALIFYING CRITERIA', hr,
+    `Allows Marketing Reactivation: ${activeLeverId==='email_reactivation' ? 'Yes – all channels / Yes – email only' : activeLeverId==='mailer_deferment' ? 'Yes – all channels / Yes – mailer only' : 'N/A'}`,
+    'Marketing Activity Status: Approved / Awaiting Approval – High Likelihood',
+    'Sender: Hinge Health only',
+    'Tier restrictions: Tiers 1–3',
+    'Exclusions: Custom / PFL offline / Cornerstone mailers; active longitudinal experiments; new or high-relationship-risk Tier 1 clients',
+    `Volume limit: ${lever.subtitle}`,
+    '',
+    hr, 'IMPACTED TOUCHPOINTS', hr,
+    `Touchpoint list: ${tpLink}`,
+    `Content template types: ${tmplTypes}`,
+    `Original send dates: ${origDates}`,
+    `Deferred to: ${deferDates}`,
+    '',
+    hr, 'EXECUTION DETAILS', hr,
+    'System changes: GROMO backend change in Iterable / GROMO bulk update of SFDC scheduled touchpoint dates',
+    `SFDC impact: ${sfdcReq==='Yes' ? 'Adjustments required — see Action Items' : 'No adjustments required'}`,
+    `Confidence level: ${confidence}`,
+    `Known limitations: ${limitations}`,
+  ];
+
+  if (optOut === 'Yes') {
+    lines.push('', hr, 'OPT-OUT / EXCEPTION PROCESS', hr,
+      'Who can request: EM Leads',
+      `Approval authority: ${reviewer}, with CS leadership where necessary`,
+      `How to request: EM Lead should Slack DM ${reviewer} with touchpoint(s), client(s), and reason.`,
+      'Deadline: 2 business days from announcement');
+  }
+
+  lines.push(
+    '', hr, 'REACTIVE TALKING POINTS', hr,
+    `Q: Why was my client's touchpoint delayed?\nA: We periodically make minor timing adjustments to optimize deliverability and performance. The delay applies to touchpoints originally scheduled for ${origDates}.`,
+    '',
+    `Q: Will this happen again?\nA: We make these adjustments as needed to manage program performance effectively.`,
+    '',
+    `Q: What if my client is highly sensitive to timing?\nA: ${optOut==='Yes' ? 'Please submit an opt-out request per the exception process above.' : `Please escalate to ${escalation}.`}`,
+    '', hr, 'CONTACTS', hr,
+    `Primary: ${primaryCtx}`,
+    `Escalation: ${escalation}`,
+    `GROMO/Execution: ${gromoCtx}`,
+    '', hr, 'SLACK ANNOUNCEMENT TEMPLATE', hr,
+    slackMsg,
+    '', hr, 'APPENDIX: PROCESS REFERENCE', hr,
+    `1. Acquisition drafts playbook + internal comms → shares with ${reviewer} for review`,
+    '2. Leadership review in CS/Growth Leadership Slack (24-hour minimum)',
+    '3. Announce to EM/CS in #b2c-marketing',
+    ...(optOut === 'Yes' ? ['4. Exception window (2 business days)', '5. Execution by GROMO'] : ['4. Execution by GROMO']),
+  );
+
+  navigator.clipboard.writeText(lines.join('\n')).then(() => {
+    const btn = document.getElementById('copy-btn');
+    if (btn) {
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2500);
+    }
+  });
+}
+
+// ─────────────────────────────────────────────
+// Render page from data.json
+// ─────────────────────────────────────────────
 function renderPage(data) {
-  document.title = `Quarterly Performance Levers Weekly Report · Hinge Health`;
-  document.getElementById('header-title').textContent =
-    `Quarterly Performance Levers Weekly Report`;
-  document.getElementById('header-meta').textContent = `Updated ${data.generated_at}`;
+  currentData = data;
+  document.title = 'Quarterly Performance Levers Weekly Report · Hinge Health';
+  document.getElementById('header-title').textContent = 'Quarterly Performance Levers Weekly Report';
+  document.getElementById('header-meta').textContent  = `Updated ${data.generated_at}`;
 
   const m = data.metrics;
-  document.getElementById('m-okr').textContent = fmt(m.q2_okr);
+  document.getElementById('m-okr').textContent     = fmt(m.q2_okr);
   document.getElementById('m-outlook').textContent = fmt(m.q2_outlook);
   document.getElementById('m-outlook-calc').textContent =
     `${fmt(m.cumulative)} cumulative + ${m.remaining_weeks} wks × ${fmt(m.forecast_rate)}/wk`;
@@ -417,7 +779,6 @@ function renderPage(data) {
   const badgeEl = document.getElementById('m-gap-badge');
   gapEl.textContent = fmtSign(m.gap);
   gapEl.className   = 'value ' + (m.gap >= 0 ? 'gap-positive' : 'gap-negative');
-
   if (m.gap_pct >= 0) {
     badgeEl.textContent = `+${m.gap_pct}% · On Track`;
     badgeEl.className   = 'badge badge-green';
@@ -429,44 +790,23 @@ function renderPage(data) {
     badgeEl.className   = 'badge badge-red';
   }
 
-  // Touchpoints
   const tp = data.touchpoints;
   document.getElementById('touchpoints-body').innerHTML = `
-    <tr>
-      <td>Email</td>
-      <td class="num">${fmt(tp.email.touchpoints)}</td>
-      <td class="num">${fmt(tp.email.shifted)}</td>
-    </tr>
-    <tr>
-      <td>Direct Mail</td>
-      <td class="num">${fmt(tp.dm.touchpoints)}</td>
-      <td class="num">${fmt(tp.dm.shifted)}</td>
-    </tr>
-    <tr class="total-row">
-      <td>Total</td>
-      <td class="num">${fmt(tp.email.touchpoints + tp.dm.touchpoints)}</td>
-      <td class="num">${fmt(tp.email.shifted + tp.dm.shifted)}</td>
-    </tr>
-  `;
+    <tr><td>Email</td><td class="num">${fmt(tp.email.touchpoints)}</td><td class="num">${fmt(tp.email.shifted)}</td></tr>
+    <tr><td>Direct Mail</td><td class="num">${fmt(tp.dm.touchpoints)}</td><td class="num">${fmt(tp.dm.shifted)}</td></tr>
+    <tr class="total-row"><td>Total</td><td class="num">${fmt(tp.email.touchpoints+tp.dm.touchpoints)}</td><td class="num">${fmt(tp.email.shifted+tp.dm.shifted)}</td></tr>`;
 
-  // Y2 table
   const y2Body = document.getElementById('y2-body');
-  if (data.y2_deferred && data.y2_deferred.length) {
-    y2Body.innerHTML = data.y2_deferred
-      .map(r => `<tr><td>${r.week}</td><td class="num">${fmt(r.volume)}</td></tr>`)
-      .join('');
-  } else {
-    y2Body.innerHTML = '<tr><td colspan="2" style="color:var(--text-muted)">No data yet — run weekly update</td></tr>';
-  }
+  y2Body.innerHTML = (data.y2_deferred && data.y2_deferred.length)
+    ? data.y2_deferred.map(r=>`<tr><td>${r.week}</td><td class="num">${fmt(r.volume)}</td></tr>`).join('')
+    : '<tr><td colspan="2" style="color:var(--text-muted)">No data yet</td></tr>';
 
-  // Lever cards
-  allLevers    = data.levers;
+  allLevers     = data.levers;
   recommendedId = data.recommended_lever_id;
 
   document.getElementById('lever-list').innerHTML = data.levers.map(lever => {
     const isRec = lever.id === recommendedId;
-    const urgencyClass = lever.workback_days > 0 && lever.workback_days <= 7
-      ? 'chip-urgent' : 'chip-neutral';
+    const urgencyClass = lever.workback_days > 0 && lever.workback_days <= 7 ? 'chip-urgent' : 'chip-neutral';
     return `
       <div class="lever-card" id="lever-${lever.id}" onclick="selectLever('${lever.id}')">
         <div class="lever-name">${lever.name}</div>
@@ -475,10 +815,11 @@ function renderPage(data) {
           ${isRec ? '<span class="chip chip-rec">✓ Recommended</span>' : ''}
           <span class="chip ${urgencyClass}">${lever.urgency_label}</span>
         </div>
-      </div>
-    `;
+      </div>`;
   }).join('');
 
+  initDefaults();
+  buildForm();
   selectLever(recommendedId);
 
   document.getElementById('footer').innerHTML =
