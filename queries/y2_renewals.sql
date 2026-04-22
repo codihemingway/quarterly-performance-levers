@@ -186,6 +186,8 @@ with user_min_subs as (
     left join user_contract_expiry as uce
         on s.user_id = uce.user_id
     where 1=1
+        and s.starts_at >= make_date(year(current_date()), 1, 1)
+        and s.year_count_sub >= 2
     group by all
 
 ), enso_tag_date as (
@@ -533,56 +535,24 @@ with user_min_subs as (
     where true
         and rank_hhuuid = 1
 
-) select f.*
-                
-    -- denominator retention 
-    , max(case when f.starts_at::date < now()::date - interval '14 day' then 1 else 0 end) as is_wk2_retained_den
-    , max(case when f.starts_at::date < now()::date - interval '28 day' then 1 else 0 end) as is_wk4_retained_den
-    , max(case when f.starts_at::date < now()::date - interval '56 day' then 1 else 0 end) as is_wk8_retained_den
-    
-    -- numerator retention
-    , max(case when f.starts_at::date >= now()::date - interval '14 day' then 0
-                when ea.activity_date_at::date >= f.starts_at::date + 8 and ea.activity_date_at::date <= f.starts_at::date + 14 then 1
-                else 0 end) as is_wk2_retained
-    , max(case when f.starts_at::date >= now()::date - interval '28 day' then 0
-                when ea.activity_date_at::date >= f.starts_at::date + 22 and ea.activity_date_at::date <= f.starts_at::date + 28 then 1
-                else 0 end) as is_wk4_retained
-    , max(case when f.starts_at::date >= now()::date - interval '56 day' then 0
-                when ea.activity_date_at::date >= f.starts_at::date + 50 and ea.activity_date_at::date <= f.starts_at::date + 56 then 1
-                else 0 end) as is_wk8_retained
-    
-    , max(case when ea.activity_date_at between f.starts_at + interval '1 day' and f.starts_at + interval '30 day' then 1 else 0 end) as is_m1_retained
-    , max(case when ea.activity_date_at between f.starts_at + interval '31 day' and f.starts_at + interval '60 day' then 1 else 0 end) as is_m2_retained
-    , max(case when ea.activity_date_at between f.starts_at + interval '61 day' and f.starts_at + interval '90 day' then 1 else 0 end) as is_m3_retained
-    , max(case when ea.activity_date_at between f.starts_at + interval '151 day' and f.starts_at + interval '180 day' then 1 else 0 end) as is_m6_retained
-    
-    , max(case when f.starts_at < now()::date - interval '30 day' then 1 else 0 end) as is_m1_retained_eligible
-    , max(case when f.starts_at < now()::date - interval '60 day' then 1 else 0 end) as is_m2_retained_eligible
-    , max(case when f.starts_at < now()::date - interval '90 day' then 1 else 0 end) as is_m3_retained_eligible
-    , max(case when f.starts_at < now()::date - interval '180 day' then 1 else 0 end) as is_m6_retained_eligible
-    , ep.is_eligible
-    , m360.is_eligible as is_eligible_m360
-    , em.Segment_ThruW4_PostOnboarding as y1_retention_segment
-    
-    , CASE WHEN DATE_ADD(f.starts_at, 1 - DAYOFWEEK(f.starts_at)) >= DATE_ADD(NOW(), 1 - DAYOFWEEK(NOW())) - interval '2 weeks' THEN NULL  
-               ELSE SUM(CASE WHEN ea.billable_activity_rank_playlist IS NOT NULL AND ea.activity_date_at BETWEEN f.starts_at AND f.starts_at + interval '14 days' THEN 1 ELSE 0 END) 
-            END AS week_2_billable_activities
-    , CASE WHEN DATE_ADD(f.starts_at, 1 - DAYOFWEEK(f.starts_at)) >= DATE_ADD(NOW(), 1 - DAYOFWEEK(NOW())) - interval '4 weeks' THEN NULL 
-               ELSE SUM(CASE WHEN ea.billable_activity_rank_playlist IS NOT NULL AND ea.activity_date_at BETWEEN f.starts_at AND f.starts_at + interval '28 days' THEN 1 ELSE 0 END) 
-            END AS week_4_billable_activities
-    , SUM(CASE WHEN ea.billable_activity_rank_playlist IS NOT NULL AND ea.activity_date_at BETWEEN f.starts_at AND f.ends_at THEN 1 ELSE 0 END) AS billable_activities
-    
-
+-- =============================================================================
+-- Aggregate by subscription start week for the dashboard
+-- =============================================================================
+) select
+    date_trunc('week', f.starts_at)::date                              as starts_at
+    , count(distinct case when f.outreach_type_attribution = 'enso_renewal'
+                          then f.user_id end)                          as enso_renewals
+    , count(distinct case when f.outreach_type_attribution in ('wph_renewal', 'chronic_renewal')
+                          then f.user_id end)                          as wph_or_chronic_renewals
+    , count(distinct case when f.outreach_type_attribution = 'unmarketed'
+                          then f.user_id end)                          as unmarketed_renewals
+    , count(distinct case when f.y2_renewal_type = 'paid_renewal'
+                          then f.user_id end)                          as paid_renewals
+    , count(distinct case when f.y2_renewal_type = 'unpaid_renewal'
+                          then f.user_id end)                          as unpaid_renewals
+    , count(distinct case when f.y2_renewal_type = 'organic_renewal'
+                          then f.user_id end)                          as organic_renewals
+    , count(distinct f.user_id)                                        as total_renewals
 from final as f
-left join dbt_prod.fct_user_engagement_activities as ea 
-    on f.user_id = ea.user_id
-        and date_trunc('day', ea.activity_date_at) between f.starts_at and f.ends_at
-        and ea.activity_event_type != 'article_read'
-left join eligibility.eligibility_patient as ep
-    on f.user_id = ep.user_id
-left join m360_eligibility_staging as m360
-    on f.user_uuid = m360.hhuuid
-left join dbt_prod.fct_user_engagement_metrics as em 
-    on f.user_id = em.user_id 
-group by all
-order by user_id
+group by 1
+order by 1

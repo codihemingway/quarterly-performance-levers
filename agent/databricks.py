@@ -324,66 +324,44 @@ def fetch_y2_renewals(host: str = None, token: str = None, warehouse_id: str = N
         except (ValueError, TypeError):
             return None
 
-    # Aggregate user-level rows into weekly buckets
-    weekly: dict = defaultdict(lambda: {
-        "enso_renewals": 0, "wph_or_chronic_renewals": 0, "unmarketed_renewals": 0,
-        "paid_renewals": 0, "unpaid_renewals": 0, "organic_renewals": 0,
-    })
-
-    for row in rows:
-        # New query is user-level; filter to Y2+ subscriptions only
+    def _int(val):
         try:
-            year_count = int(float(row.get("year_count_sub") or 0))
+            return int(float(val or 0))
         except (TypeError, ValueError):
-            year_count = 0
-        if year_count < 2:
-            continue
+            return 0
 
+    # Query already aggregated by week — one row per week with count columns
+    result = []
+    for row in rows:
         day_str = row.get("starts_at", "")
         monday = _week_start(day_str)
         if monday is None:
             continue
 
-        w = weekly[monday]
+        enso     = _int(row.get("enso_renewals"))
+        wph      = _int(row.get("wph_or_chronic_renewals"))
+        unmkt    = _int(row.get("unmarketed_renewals"))
+        paid     = _int(row.get("paid_renewals"))
+        unpaid   = _int(row.get("unpaid_renewals"))
+        organic  = _int(row.get("organic_renewals"))
+        total    = enso + wph + unmkt
 
-        # By user type (outreach_type_attribution)
-        outreach = (row.get("outreach_type_attribution") or "").lower()
-        if outreach == "enso_renewal":
-            w["enso_renewals"] += 1
-        elif outreach in ("wph_renewal", "chronic_renewal"):
-            w["wph_or_chronic_renewals"] += 1
-        elif outreach == "unmarketed":
-            w["unmarketed_renewals"] += 1
-
-        # By channel (y2_renewal_type)
-        renewal_type = (row.get("y2_renewal_type") or "").lower()
-        if renewal_type == "paid_renewal":
-            w["paid_renewals"] += 1
-        elif renewal_type == "unpaid_renewal":
-            w["unpaid_renewals"] += 1
-        elif renewal_type == "organic_renewal":
-            w["organic_renewals"] += 1
-
-    result = []
-    for monday in sorted(weekly.keys()):
-        w = weekly[monday]
-        total = w["enso_renewals"] + w["wph_or_chronic_renewals"] + w["unmarketed_renewals"]
         result.append({
             "week":                    monday.strftime("%b %-d, %Y"),
             # kept for backward compat
             "volume":                  total,
             "okr":                     0,
             # by user type
-            "enso_renewals":           w["enso_renewals"],
-            "wph_or_chronic_renewals": w["wph_or_chronic_renewals"],
-            "unmarketed_renewals":     w["unmarketed_renewals"],
+            "enso_renewals":           enso,
+            "wph_or_chronic_renewals": wph,
+            "unmarketed_renewals":     unmkt,
             "enso_okr":                0,
             "chronic_wph_okr":         0,
             "unmarketed_expected":     0,
             # by channel
-            "paid_renewals":           w["paid_renewals"],
-            "unpaid_renewals":         w["unpaid_renewals"],
-            "organic_renewals":        w["organic_renewals"],
+            "paid_renewals":           paid,
+            "unpaid_renewals":         unpaid,
+            "organic_renewals":        organic,
             "paid_okr":                0,
             "unpaid_okr":              0,
             "organic_okr":             0,
@@ -392,4 +370,5 @@ def fetch_y2_renewals(host: str = None, token: str = None, warehouse_id: str = N
             "okr_forecast":            0,
         })
 
+    result.sort(key=lambda r: r["week"])
     return result
