@@ -27,27 +27,59 @@ _DM_ENROLLMENTS_COL = "dm_enrollments_deferred"
 
 
 def _get_current_week_row(rows: list[dict]) -> dict | None:
-    """Return the row whose decision_date is closest to today (most recent past Monday)."""
-    from datetime import date, timedelta
-    today = date.today()
-    # Find the most recent Monday on or before today
-    monday = today - timedelta(days=today.weekday())
-    monday_str = monday.isoformat()
-
-    # Try exact match first, then fall back to the latest row
+    """Return the row for the current or next upcoming decision date."""
+    from datetime import date
+    today = date.today().isoformat()
     for row in rows:
-        if str(row.get("decision_date", "")).startswith(monday_str):
+        dd = str(row.get("decision_date", ""))[:10]
+        if dd >= today:
             return row
-    # Fall back to last row
     return rows[-1] if rows else None
+
+
+def _fmt_date(val) -> str | None:
+    """Format a date value as 'Apr 6, 2026'."""
+    if not val:
+        return None
+    s = str(val)[:10]
+    try:
+        from datetime import date as _date
+        d = _date.fromisoformat(s)
+        return d.strftime("%b %-d, %Y")
+    except ValueError:
+        return s
 
 
 def fetch_touchpoints(host: str = None, token: str = None, warehouse_id: str = None) -> dict:
     """
     Run channel_touchpoints.sql against Databricks and return:
       {
-        "email": {"touchpoints": int, "shifted": int},
+        "email": {"touchpoints": int, "shifted": int},  # current decision week summary
         "dm":    {"touchpoints": int, "shifted": int},
+        "rows":  [                                       # full weekly schedule
+          {
+            "decision_date":       "Apr 14, 2026",
+            "email_inhome_week":   "Apr 20, 2026",
+            "email_reactivation":  45.3,
+            "email_flat_deferment": None,
+            "dm_inhome_week":      "May 11, 2026",
+            "dm_reactivation":     32.1,
+            "dm_flat_deferment":   None,
+            "dm_note":             None,
+            "email_total_sends":   180000,
+            "email_qualified_volume": 120000,
+            "email_pct_deferrable":   0.667,
+            "email_qualified_am":     384.0,
+            "email_days_to_qtr_end":  71,
+            "email_decay_pct":        0.0,
+            "dm_total_sends":         90000,
+            "dm_qualified_volume":    60000,
+            "dm_pct_deferrable":      0.5,
+            "dm_qualified_am":        300.0,
+            "dm_days_to_qtr_end":     50,
+            "dm_decay_pct":           0.11,
+          }, ...
+        ]
       }
     Raises RuntimeError if credentials are missing or the query fails.
     """
@@ -62,50 +94,10 @@ def fetch_touchpoints(host: str = None, token: str = None, warehouse_id: str = N
         )
 
     sql = _SQL_PATH.read_text(encoding="utf-8")
-    headers = {"Authorization": f"Bearer {_extract_token(token)}", "Content-Type": "application/json"}
-    base = f"{host}/api/2.0/sql/statements"
-
-    # Submit statement
-    resp = requests.post(
-        base,
-        headers=headers,
-        json={
-            "warehouse_id": warehouse_id,
-            "statement": sql,
-            "wait_timeout": "50s",
-            "on_wait_timeout": "CONTINUE",
-        },
-        timeout=60,
-    )
-    resp.raise_for_status()
-    result = resp.json()
-    statement_id = result["statement_id"]
-
-    # Poll until done
-    for _ in range(30):
-        state = result.get("status", {}).get("state", "")
-        if state in ("SUCCEEDED", "FAILED", "CANCELED", "CLOSED"):
-            break
-        time.sleep(3)
-        poll = requests.get(f"{base}/{statement_id}", headers=headers, timeout=30)
-        poll.raise_for_status()
-        result = poll.json()
-
-    state = result.get("status", {}).get("state", "")
-    if state != "SUCCEEDED":
-        err = result.get("status", {}).get("error", {}).get("message", state)
-        raise RuntimeError(f"Databricks query failed: {err}")
-
-    # Parse result into list of dicts
-    manifest = result.get("manifest", {})
-    columns = [c["name"] for c in manifest.get("schema", {}).get("columns", [])]
-    data_array = result.get("result", {}).get("data_array", [])
-    rows = [dict(zip(columns, row)) for row in data_array]
+    rows = _run_sql(sql, host, token, warehouse_id)
 
     if not rows:
         raise RuntimeError("Databricks query returned no rows.")
-
-    row = _get_current_week_row(rows)
 
     def _int(val):
         try:
@@ -113,15 +105,52 @@ def fetch_touchpoints(host: str = None, token: str = None, warehouse_id: str = N
         except (TypeError, ValueError):
             return 0
 
+    def _num(val):
+        if val is None:
+            return None
+        try:
+            return round(float(val), 2)
+        except (TypeError, ValueError):
+            return None
+
+    schedule_rows = []
+    for r in rows:
+        schedule_rows.append({
+            "decision_date":          _fmt_date(r.get("decision_date")),
+            "email_inhome_week":      _fmt_date(r.get("email_inhome_week")),
+            "email_reactivation":     _num(r.get("email_enrollments_deferred")),
+            "email_flat_deferment":   _num(r.get("email_flat_deferment")),
+            "dm_inhome_week":         _fmt_date(r.get("dm_inhome_week")),
+            "dm_reactivation":        _num(r.get("dm_enrollments_deferred")),
+            "dm_flat_deferment":      _num(r.get("dm_flat_deferment")),
+            "dm_note":                r.get("dm_note"),
+            "email_total_sends":      _int(r.get("email_total_sends")),
+            "email_qualified_volume": _int(r.get("email_qualified_volume")),
+            "email_pct_deferrable":   _num(r.get("email_pct_deferrable")),
+            "email_qualified_am":     _num(r.get("email_qualified_am")),
+            "email_days_to_qtr_end":  _int(r.get("email_days_to_qtr_end")),
+            "email_decay_pct":        _num(r.get("email_decay_pct")),
+            "dm_total_sends":         _int(r.get("dm_total_sends")),
+            "dm_qualified_volume":    _int(r.get("dm_qualified_volume")),
+            "dm_pct_deferrable":      _num(r.get("dm_pct_deferrable")),
+            "dm_qualified_am":        _num(r.get("dm_qualified_am")),
+            "dm_days_to_qtr_end":     _int(r.get("dm_days_to_qtr_end")),
+            "dm_decay_pct":           _num(r.get("dm_decay_pct")),
+        })
+
+    # Summary row for lever subtitle computation (current/next decision week)
+    current_row = _get_current_week_row(rows)
+
     return {
         "email": {
-            "touchpoints": _int(row.get(_EMAIL_TOUCHPOINTS_COL)),
-            "shifted": _int(row.get(_EMAIL_ENROLLMENTS_COL)),
+            "touchpoints": _int(current_row.get(_EMAIL_TOUCHPOINTS_COL)) if current_row else 0,
+            "shifted":     _int(current_row.get(_EMAIL_ENROLLMENTS_COL)) if current_row else 0,
         },
         "dm": {
-            "touchpoints": _int(row.get(_DM_TOUCHPOINTS_COL)),
-            "shifted": _int(row.get(_DM_ENROLLMENTS_COL)),
+            "touchpoints": _int(current_row.get(_DM_TOUCHPOINTS_COL)) if current_row else 0,
+            "shifted":     _int(current_row.get(_DM_ENROLLMENTS_COL)) if current_row else 0,
         },
+        "rows": schedule_rows,
     }
 
 

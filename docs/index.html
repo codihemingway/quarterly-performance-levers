@@ -75,6 +75,12 @@
 
     /* ── Tables ── */
     .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .tables-single { grid-template-columns: 1fr; max-width: 480px; }
+    .schedule-card { width: 100%; }
+    .schedule-card h3 { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .table-scroll table { min-width: 760px; }
+    .badge-muted { background: var(--border); color: var(--text-secondary); font-size: 0.7rem; padding: 2px 8px; border-radius: 99px; font-weight: 600; white-space: nowrap; }
     .table-card h3 { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
     table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
     th { text-align: left; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding-bottom: 8px; border-bottom: 1px solid var(--border); }
@@ -208,26 +214,38 @@
       </div>
     </section>
 
-    <!-- ── Tables ── -->
+    <!-- ── Deferment Schedule ── -->
     <section>
-      <div class="tables-grid">
-        <div class="card table-card">
-          <h3>Channel Touchpoints</h3>
+      <div class="card schedule-card">
+        <h3>Deferment &amp; Reactivation Schedule</h3>
+        <div class="table-scroll">
           <table>
             <thead><tr>
-              <th>Channel</th>
-              <th class="num">Touchpoints</th>
-              <th class="num">Actual Enroll.</th>
+              <th>Decision Date</th>
+              <th class="num">Email In-Home</th>
+              <th class="num">Email Reactiv. AM</th>
+              <th class="num">Email Flat Defer</th>
+              <th class="num">DM In-Home</th>
+              <th class="num">DM Reactiv. AM</th>
+              <th class="num">DM Flat Defer</th>
+              <th>Note</th>
             </tr></thead>
             <tbody id="touchpoints-body"></tbody>
           </table>
         </div>
+      </div>
+    </section>
+
+    <!-- ── Y2 Renewals ── -->
+    <section>
+      <div class="tables-grid tables-single">
         <div class="card table-card">
-          <h3>Y2 Deferred Renewals by Sub End Date</h3>
+          <h3>Y2 Actual Renewals by Sub Start Date</h3>
           <table>
             <thead><tr>
-              <th>Sub End Week</th>
+              <th>Sub Start Week</th>
               <th class="num">Actual Renewals</th>
+              <th class="num">OKR</th>
             </tr></thead>
             <tbody id="y2-body"></tbody>
           </table>
@@ -790,16 +808,31 @@ function renderPage(data) {
     badgeEl.className   = 'badge badge-red';
   }
 
-  const tp = data.touchpoints;
-  document.getElementById('touchpoints-body').innerHTML = `
-    <tr><td>Email</td><td class="num">${fmt(tp.email.touchpoints)}</td><td class="num">${fmt(tp.email.shifted)}</td></tr>
-    <tr><td>Direct Mail</td><td class="num">${fmt(tp.dm.touchpoints)}</td><td class="num">${fmt(tp.dm.shifted)}</td></tr>
-    <tr class="total-row"><td>Total</td><td class="num">${fmt(tp.email.touchpoints+tp.dm.touchpoints)}</td><td class="num">${fmt(tp.email.shifted+tp.dm.shifted)}</td></tr>`;
+  // Deferment & Reactivation Schedule
+  const scheduleRows = (data.touchpoints && data.touchpoints.rows) || [];
+  function fmtAM(v) { return v != null ? Number(v).toFixed(1) : '—'; }
+  document.getElementById('touchpoints-body').innerHTML = scheduleRows.length
+    ? scheduleRows.map(r => `<tr>
+        <td>${r.decision_date || '—'}</td>
+        <td class="num">${r.email_inhome_week || '—'}</td>
+        <td class="num">${fmtAM(r.email_reactivation)}</td>
+        <td class="num">${fmtAM(r.email_flat_deferment)}</td>
+        <td class="num">${r.dm_inhome_week || '—'}</td>
+        <td class="num">${fmtAM(r.dm_reactivation)}</td>
+        <td class="num">${fmtAM(r.dm_flat_deferment)}</td>
+        <td>${r.dm_note ? `<span class="badge badge-muted">${r.dm_note}</span>` : '—'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="8" style="color:var(--text-muted)">No schedule data available</td></tr>';
 
+  // Y2 Renewals
   const y2Body = document.getElementById('y2-body');
   y2Body.innerHTML = (data.y2_deferred && data.y2_deferred.length)
-    ? data.y2_deferred.map(r=>`<tr><td>${r.week}</td><td class="num">${fmt(r.volume)}</td></tr>`).join('')
-    : '<tr><td colspan="2" style="color:var(--text-muted)">No data yet</td></tr>';
+    ? data.y2_deferred.map(r=>`<tr>
+        <td>${r.week}</td>
+        <td class="num">${fmt(r.volume)}</td>
+        <td class="num">${r.okr != null ? fmt(r.okr) : '—'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="3" style="color:var(--text-muted)">No data yet</td></tr>';
 
   allLevers     = data.levers;
   recommendedId = data.recommended_lever_id;
