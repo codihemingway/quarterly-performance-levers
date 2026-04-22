@@ -10,7 +10,7 @@ load_dotenv()
 from .data import parse_mode_dashboard
 from .decision import recommend_lever, calculate_gap, calculate_q2_gap
 from .playbook import render_playbook
-from .databricks import fetch_touchpoints
+from .databricks import fetch_touchpoints, fetch_y2_renewals
 
 
 def build_summary(row, recommendation):
@@ -94,6 +94,14 @@ def generate_web_data(row, recommendation, y2_table_text: str, docs_dir: Path) -
                 "shifted": int(row.direct_mail_touchpoints * 0.60),
             },
         }
+
+    # Pull live Y2 renewals from Databricks; fall back to parsed handoff text
+    try:
+        _y2_deferred = fetch_y2_renewals()
+        print("Y2 renewals sourced from Databricks.")
+    except Exception as e:
+        print(f"Databricks unavailable for Y2 renewals ({e}); using handoff text.")
+        _y2_deferred = _parse_y2_deferred(y2_table_text)
 
     email_defer = int(_touchpoints["email"]["touchpoints"] * 0.70)
 
@@ -198,7 +206,7 @@ def generate_web_data(row, recommendation, y2_table_text: str, docs_dir: Path) -
             "forecast_rate": row.forecast_enrollments,
         },
         "touchpoints": _touchpoints,
-        "y2_deferred": _parse_y2_deferred(y2_table_text),
+        "y2_deferred": _y2_deferred,
         "recommended_lever_id": _lever_id(recommendation),
         "levers": levers,
     }
