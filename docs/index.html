@@ -824,8 +824,19 @@ function renderPage(data) {
     badgeEl.className   = 'badge badge-red';
   }
 
+  // Current-quarter filter helper
+  const _today = new Date();
+  const _qMonth = Math.floor(_today.getMonth() / 3) * 3;
+  const _qStart = new Date(_today.getFullYear(), _qMonth, 1);
+  const _qEnd   = new Date(_today.getFullYear(), _qMonth + 3, 0);
+  function inCurrentQuarter(s) {
+    if (!s) return false;
+    const d = new Date(s);
+    return d >= _qStart && d <= _qEnd;
+  }
+
   // Deferment & Reactivation Schedule
-  const scheduleRows = (data.touchpoints && data.touchpoints.rows) || [];
+  const scheduleRows = ((data.touchpoints && data.touchpoints.rows) || []).filter(r => inCurrentQuarter(r.decision_date));
   function fmtAM(v) { return v != null ? Number(v).toFixed(1) : '—'; }
   document.getElementById('touchpoints-body').innerHTML = scheduleRows.length
     ? scheduleRows.map(r => `<tr>
@@ -842,7 +853,7 @@ function renderPage(data) {
 
   // Y2 Renewals
   const y2Body = document.getElementById('y2-body');
-  const y2Rows = data.y2_deferred || [];
+  const y2Rows = (data.y2_deferred || []).filter(r => inCurrentQuarter(r.week));
   y2Body.innerHTML = y2Rows.length
     ? y2Rows.map(r => `<tr>
         <td>${r.week}</td>
