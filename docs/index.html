@@ -1018,10 +1018,17 @@ function renderPage(data) {
   const _qMonth = Math.floor(_today.getMonth() / 3) * 3;
   const _qStart = new Date(_today.getFullYear(), _qMonth, 1);
   const _qEnd   = new Date(_today.getFullYear(), _qMonth + 3, 0);
-  function inCurrentQuarter(s) {
-    if (!s) return false;
+  const _MONTHS = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  function _parseDate(s) {
+    if (!s) return null;
+    const m = String(s).match(/(\w{3})\s+(\d{1,2}),\s+(\d{4})/);
+    if (m) return new Date(+m[3], _MONTHS[m[1]], +m[2]);
     const d = new Date(s);
-    return d >= _qStart && d <= _qEnd;
+    return isNaN(d) ? null : d;
+  }
+  function inCurrentQuarter(s) {
+    const d = _parseDate(s);
+    return d && d >= _qStart && d <= _qEnd;
   }
 
   // Deferment & Reactivation Schedule
