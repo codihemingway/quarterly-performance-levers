@@ -227,6 +227,51 @@
     .refresh-btn.ok  { border-color: var(--hh-mint); color: var(--hh-mint); }
     .refresh-btn.err { border-color: #f87171; color: #f87171; }
 
+    /* ── Feedback button ── */
+    .feedback-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.75rem; font-weight: 600; font-family: inherit;
+      padding: 5px 14px; border-radius: 999px;
+      border: 1.5px solid rgba(255,255,255,.35); background: transparent;
+      color: rgba(255,255,255,.75); cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s; flex-shrink: 0;
+    }
+    .feedback-btn:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.6); color: #fff; }
+
+    /* ── Feedback modal ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,.55); align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 14px; padding: 28px 28px 24px;
+      width: min(480px, 92vw); box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+    .modal-box h2 { margin: 0 0 4px; font-size: 1.1rem; color: var(--hh-navy); }
+    .modal-box p { margin: 0 0 16px; font-size: 0.82rem; color: var(--text-muted); }
+    .modal-box label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+    .modal-box input, .modal-box textarea {
+      width: 100%; box-sizing: border-box; border: 1.5px solid #d1d5db; border-radius: 8px;
+      padding: 8px 10px; font-size: 0.88rem; font-family: inherit; margin-bottom: 14px;
+      outline: none; transition: border-color .15s;
+    }
+    .modal-box input:focus, .modal-box textarea:focus { border-color: var(--hh-green); }
+    .modal-box textarea { resize: vertical; min-height: 100px; }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+    .modal-cancel {
+      padding: 7px 18px; border-radius: 999px; border: 1.5px solid #d1d5db;
+      background: transparent; color: var(--text-muted); font-size: 0.8rem;
+      font-family: inherit; cursor: pointer;
+    }
+    .modal-cancel:hover { border-color: #9ca3af; color: #374151; }
+    .modal-submit {
+      padding: 7px 18px; border-radius: 999px; border: none;
+      background: var(--hh-green); color: #fff; font-size: 0.8rem; font-weight: 600;
+      font-family: inherit; cursor: pointer;
+    }
+    .modal-submit:hover { background: var(--hh-teal); }
+
     /* ── Loading ── */
     #loading { text-align: center; padding: 80px; color: var(--text-muted); font-size: 0.95rem; }
 
@@ -251,9 +296,26 @@
   <div class="header-title" id="header-title">Quarterly Performance Levers Weekly Report</div>
   <div class="header-right">
     <div class="header-meta" id="header-meta"></div>
+    <button class="feedback-btn" onclick="openFeedback()" title="Submit feedback">✉ Feedback</button>
     <button class="refresh-btn" id="refresh-btn" onclick="doRefresh()" title="Reload latest data">↻ Refresh</button>
   </div>
 </header>
+
+<!-- Feedback modal -->
+<div class="modal-overlay" id="feedback-modal" onclick="if(event.target===this)closeFeedback()">
+  <div class="modal-box">
+    <h2>Send Feedback</h2>
+    <p>Your message will go to codi.hemingway@hingehealth.com</p>
+    <label for="fb-name">Your name (optional)</label>
+    <input id="fb-name" type="text" placeholder="e.g. Jane Smith" />
+    <label for="fb-msg">Feedback</label>
+    <textarea id="fb-msg" placeholder="What would you like to share?"></textarea>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="closeFeedback()">Cancel</button>
+      <button class="modal-submit" onclick="submitFeedback()">Send</button>
+    </div>
+  </div>
+</div>
 
 <main>
   <div id="loading">Loading playbook data…</div>
@@ -1361,6 +1423,28 @@ ${v.notes      ? `<h3>Additional Notes</h3><p>${v.notes.replace(/\n/g,'<br/>')}<
     btn.querySelector('span').textContent = 'Create Asana Task';
   }
 }
+
+// ── Feedback modal ────────────────────────────────────────────────────────────
+function openFeedback() {
+  document.getElementById('fb-name').value = '';
+  document.getElementById('fb-msg').value = '';
+  document.getElementById('feedback-modal').classList.add('open');
+  document.getElementById('fb-msg').focus();
+}
+function closeFeedback() {
+  document.getElementById('feedback-modal').classList.remove('open');
+}
+function submitFeedback() {
+  const name = document.getElementById('fb-name').value.trim();
+  const msg  = document.getElementById('fb-msg').value.trim();
+  if (!msg) { document.getElementById('fb-msg').focus(); return; }
+  const from  = name ? `From: ${name}\n\n` : '';
+  const body  = encodeURIComponent(`${from}${msg}\n\n— Submitted from Quarterly Performance Levers Dashboard`);
+  const subj  = encodeURIComponent('Quarterly Levers Dashboard Feedback');
+  window.location.href = `mailto:codi.hemingway@hingehealth.com?subject=${subj}&body=${body}`;
+  closeFeedback();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFeedback(); });
 </script>
 </body>
 </html>
