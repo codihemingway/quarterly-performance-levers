@@ -3,6 +3,8 @@ from typing import Optional
 
 from .data import ModeRow
 
+GLEAN_LEVERS_DOC = "https://docs.google.com/document/d/1dOhc55Qyxg-14HZvCxzo-FAiws49B91tPABXgtgKtDM"
+
 @dataclass
 class LeverRecommendation:
     name: str
@@ -12,8 +14,8 @@ class LeverRecommendation:
     action: str
     email_touchpoints: int
     direct_mail_touchpoints: int
-    email_shifted_enrollments: int
-    dm_shifted_enrollments: int
+    email_shifted_enrollments: int = 0
+    dm_shifted_enrollments: int = 0
 
 
 def calculate_q2_gap(row: ModeRow) -> float:
@@ -23,7 +25,6 @@ def calculate_q2_gap(row: ModeRow) -> float:
 
 
 def calculate_gap(row: ModeRow) -> float:
-    """Alias kept for backward compatibility."""
     return calculate_q2_gap(row)
 
 
@@ -41,58 +42,20 @@ def recommend_lever(row: ModeRow) -> Optional[LeverRecommendation]:
     q2_gap = calculate_q2_gap(row)
     weeks_left = row.remaining_weeks
 
-    # Q2 on track — no lever needed; gap within 2% of OKR is acceptable
-    if q2_gap >= -2.0:
-        return LeverRecommendation(
-            name="No Action Required — DM Pipeline Supporting Q2",
-            rationale=(
-                f"Q2 outlook ({row.q2_outlook:,}) is {q2_gap:+.1f}% vs the Q2 OKR ({row.q2_okr:,}). "
-                "Gap is within the 2% action threshold — no lever needed. "
-                "Prior direct mail campaigns are driving enrollment pipeline into Q2."
-            ),
-            estimated_impact=(
-                f"Q2 outlook is tracking {row.q2_outlook - row.q2_okr:+,} vs OKR. "
-                "No lever action needed; monitor quarterly pacing."
-            ),
-            workback_days=0,
-            action="Hold all channel volumes as planned. Reassess if Q2 outlook drops more than 2% below OKR.",
-            email_touchpoints=row.email_touchpoints,
-            direct_mail_touchpoints=row.direct_mail_touchpoints,
-            email_shifted_enrollments=int(row.email_touchpoints * 0.70),
-            dm_shifted_enrollments=int(row.direct_mail_touchpoints * 0.60),
-        )
-
-    # Q2 under-pacing by more than 2% with time to act — email reactivation
-    if q2_gap < -2.0 and weeks_left >= 4:
-        if qualifies_for_email_reactivation(row):
-            volume_pct = 70
-            impact = int(row.email_touchpoints * 0.7)
-            return LeverRecommendation(
-                name="Email Reactivation",
-                rationale=(
-                    f"Q2 outlook ({row.q2_outlook:,}) is {q2_gap:.1f}% below OKR ({row.q2_okr:,}) "
-                    f"with {weeks_left} weeks remaining. "
-                    "Email reactivation is eligible under marketing/reactivation criteria."
-                ),
-                estimated_impact=(
-                    f"Defer {volume_pct}% of email volume from the next eligible window. "
-                    f"Estimated movement: -{impact:,} Q2 enrollments to Q3."
-                ),
-                workback_days=7,
-                action="Defer reactivation volume and update campaign calendar.",
-                email_touchpoints=row.email_touchpoints,
-                direct_mail_touchpoints=row.direct_mail_touchpoints,
-            )
-
-    # Q2 over-pacing near end of quarter — mailer deferment
-    if q2_gap >= 2.0 and weeks_left <= 2:
+    # Over-pacing by more than 2% — defer volume to Q3
+    if q2_gap > 2.0:
         return LeverRecommendation(
             name="Mailer Flat Deferment",
             rationale=(
-                f"Q2 outlook is {q2_gap:.1f}% above OKR with only {weeks_left} weeks remaining. "
-                "Use standard mail deferment to shift volume into next quarter."
+                f"Q2 outlook ({row.q2_outlook:,}) is {q2_gap:+.1f}% above OKR ({row.q2_okr:,}) — "
+                f"over the 2% action threshold with {weeks_left} weeks remaining. "
+                "Defer DM volume to Q3 to avoid over-delivering this quarter. "
+                f"Reference: {GLEAN_LEVERS_DOC}"
             ),
-            estimated_impact="Defer 100% of qualifying mail volume into next quarter.",
+            estimated_impact=(
+                f"Defer qualifying mail volume into Q3. "
+                f"Estimated movement: -{row.direct_mail_touchpoints:,} DM touchpoints shifted."
+            ),
             workback_days=30,
             action="Pause outbound mailer shipments and update the mail calendar.",
             email_touchpoints=row.email_touchpoints,
@@ -101,13 +64,60 @@ def recommend_lever(row: ModeRow) -> Optional[LeverRecommendation]:
             dm_shifted_enrollments=int(row.direct_mail_touchpoints * 0.60),
         )
 
-    # Q2 under-pacing by more than 2%, too late for email reactivation
+    # Within ±2% — no action needed, reference Glean for context
+    if q2_gap >= -2.0:
+        return LeverRecommendation(
+            name="No Action Required — DM Pipeline Supporting Q2",
+            rationale=(
+                f"Q2 outlook ({row.q2_outlook:,}) is {q2_gap:+.1f}% vs the Q2 OKR ({row.q2_okr:,}). "
+                "Gap is within the ±2% action threshold — no lever needed. "
+                "Prior direct mail campaigns are driving enrollment pipeline into Q2. "
+                f"Reference: {GLEAN_LEVERS_DOC}"
+            ),
+            estimated_impact=(
+                f"Q2 outlook is tracking {row.q2_outlook - row.q2_okr:+,} vs OKR. "
+                "No lever action needed; monitor quarterly pacing."
+            ),
+            workback_days=0,
+            action="Hold all channel volumes as planned. Reassess if gap moves outside ±2%.",
+            email_touchpoints=row.email_touchpoints,
+            direct_mail_touchpoints=row.direct_mail_touchpoints,
+            email_shifted_enrollments=int(row.email_touchpoints * 0.70),
+            dm_shifted_enrollments=int(row.direct_mail_touchpoints * 0.60),
+        )
+
+    # Under-pacing by more than 2% with time to act — email reactivation
+    if q2_gap < -2.0 and weeks_left >= 4:
+        if qualifies_for_email_reactivation(row):
+            impact = int(row.email_touchpoints * 0.7)
+            return LeverRecommendation(
+                name="Email Reactivation",
+                rationale=(
+                    f"Q2 outlook ({row.q2_outlook:,}) is {q2_gap:.1f}% below OKR ({row.q2_okr:,}) — "
+                    f"over the 2% action threshold with {weeks_left} weeks remaining. "
+                    "Email reactivation is eligible under marketing/reactivation criteria. "
+                    f"Reference: {GLEAN_LEVERS_DOC}"
+                ),
+                estimated_impact=(
+                    f"Defer 70% of email volume from the next eligible window. "
+                    f"Estimated movement: -{impact:,} Q2 enrollments to Q3."
+                ),
+                workback_days=7,
+                action="Defer reactivation volume and update campaign calendar.",
+                email_touchpoints=row.email_touchpoints,
+                direct_mail_touchpoints=row.direct_mail_touchpoints,
+                email_shifted_enrollments=impact,
+                dm_shifted_enrollments=int(row.direct_mail_touchpoints * 0.60),
+            )
+
+    # Under-pacing by more than 2%, too late for email reactivation
     if q2_gap < -2.0 and weeks_left < 4:
         return LeverRecommendation(
             name="Throttle Pause",
             rationale=(
-                f"Q2 outlook is {q2_gap:.1f}% below OKR with only {weeks_left} weeks remaining. "
-                "Throttle pause can free up volume with a short workback."
+                f"Q2 outlook is {q2_gap:.1f}% below OKR with only {weeks_left} weeks remaining — "
+                "over the 2% action threshold. Throttle pause can free up volume with a short workback. "
+                f"Reference: {GLEAN_LEVERS_DOC}"
             ),
             estimated_impact="Unthrottle planned communications for the next available window.",
             workback_days=6,

@@ -355,9 +355,9 @@
       "week": "Apr 20, 2026",
       "volume": 9435,
       "okr": 0,
-      "enso_renewals": 7192,
+      "enso_renewals": 7193,
       "wph_or_chronic_renewals": 1403,
-      "unmarketed_renewals": 840,
+      "unmarketed_renewals": 839,
       "enso_okr": 0,
       "chronic_wph_okr": 0,
       "unmarketed_expected": 0,
@@ -656,7 +656,7 @@
       "okr_forecast": 0
     }
   ],
-  "recommended_lever_id": "no_action",
+  "recommended_lever_id": "mailer_deferment",
   "levers": [
     {
       "id": "no_action",
