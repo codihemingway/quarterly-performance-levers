@@ -48,7 +48,7 @@
     .header-logo img { height: 32px; width: auto; filter: brightness(0) invert(1); }
     .header-divider { width: 1px; height: 24px; background: rgba(255,255,255,.25); margin: 0 20px; }
     .header-title { font-size: 0.9rem; font-weight: 500; color: rgba(255,255,255,.85); flex: 1; }
-    .header-meta { font-size: 0.78rem; color: rgba(255,255,255,.5); }
+    .header-meta { font-size: 0.78rem; color: rgba(255,255,255,.5); white-space: nowrap; }
 
     /* ── Layout ── */
     main { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
@@ -210,6 +210,23 @@
     footer a { color: var(--hh-green); text-decoration: none; font-weight: 500; }
     footer a:hover { text-decoration: underline; }
 
+    /* ── Refresh button ── */
+    .header-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .refresh-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.75rem; font-weight: 600; font-family: inherit;
+      padding: 5px 14px; border-radius: 999px;
+      border: 1.5px solid rgba(255,255,255,.35); background: transparent;
+      color: rgba(255,255,255,.75); cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s; flex-shrink: 0;
+    }
+    .refresh-btn:hover:not(:disabled) { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.6); color: #fff; }
+    .refresh-btn:disabled { opacity: .5; cursor: default; }
+    .refresh-btn .spin { display: inline-block; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .refresh-btn.ok  { border-color: var(--hh-mint); color: var(--hh-mint); }
+    .refresh-btn.err { border-color: #f87171; color: #f87171; }
+
     /* ── Loading ── */
     #loading { text-align: center; padding: 80px; color: var(--text-muted); font-size: 0.95rem; }
 
@@ -232,7 +249,10 @@
   </a>
   <div class="header-divider"></div>
   <div class="header-title" id="header-title">Quarterly Performance Levers Weekly Report</div>
-  <div class="header-meta" id="header-meta"></div>
+  <div class="header-right">
+    <div class="header-meta" id="header-meta"></div>
+    <button class="refresh-btn" id="refresh-btn" onclick="doRefresh()" title="Reload latest data">↻ Refresh</button>
+  </div>
 </header>
 
 <main>
@@ -1215,6 +1235,32 @@ function gromoRebuildPreview() {
     v.notes      ? `── ADDITIONAL NOTES ──\n${v.notes}\n` : '',
   ].filter(l => l !== undefined).join('\n');
   document.getElementById('g-preview').textContent = lines;
+}
+
+// ─────────────────────────────────────────────
+// Refresh — re-fetch data.json (updated by Claude)
+// ─────────────────────────────────────────────
+async function doRefresh() {
+  const btn = document.getElementById('refresh-btn');
+  if (!btn || btn.disabled) return;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin">↻</span> Loading…';
+
+  try {
+    const data = await fetch('data.json?t=' + Date.now()).then(r => {
+      if (!r.ok) throw new Error('Could not load data.json');
+      return r.json();
+    });
+    renderPage(data);
+    gromoInit();
+    btn.className = 'refresh-btn ok';
+    btn.innerHTML = '✓ Updated';
+    setTimeout(() => { btn.className = 'refresh-btn'; btn.innerHTML = '↻ Refresh'; btn.disabled = false; }, 2000);
+  } catch (err) {
+    btn.className = 'refresh-btn err';
+    btn.innerHTML = '⚠ ' + err.message;
+    setTimeout(() => { btn.className = 'refresh-btn'; btn.innerHTML = '↻ Refresh'; btn.disabled = false; }, 3000);
+  }
 }
 
 async function gromoSubmit() {
